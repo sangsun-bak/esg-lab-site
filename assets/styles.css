@@ -16,7 +16,7 @@ a:hover { text-decoration: underline; }
 .site-header { position: sticky; top:0; background:#fff; border-bottom:1px solid #eef1f1; z-index:20; }
 .nav-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.9rem 0; }
 .brand { display:flex; align-items:center; gap:.6rem; }
-.logo { height: 70px; width: auto; max-width: 100%; }
+.logo { height: 40px; width: auto; max-width: 100%; }
 .brand-text { font-weight:700; color:var(--green-dark); white-space:nowrap; }
 .site-nav { display:flex; gap:.4rem; flex-wrap:wrap; }
 .site-nav a { padding:.5rem .7rem; border-radius:.6rem; }
