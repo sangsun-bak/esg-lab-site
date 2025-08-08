@@ -125,3 +125,49 @@ header .logo img {
     grid-template-columns: 1fr;
   }
 }
+
+
+
+/* === FIX: two-band layering so photo, green strip, and content overlap correctly === */
+.hero.two-band {
+  position: relative;
+  min-height: 420px;
+  display: block;
+}
+.hero.two-band > .hero-photo,
+.hero.two-band > .hero-strip {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.hero.two-band > .hero-photo {
+  left: 0;
+  right: 0;
+  background-image: url('../assets/images/school-panorama.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+.hero.two-band > .hero-strip {
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(var(--content-width, 1200px), 100%);
+  background: linear-gradient(135deg, var(--green-light), #f8fffb);
+  border-bottom: 1px solid #eef1f1;
+  z-index: 1;
+}
+.hero.two-band > .hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: var(--content-width, 1200px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 2rem;
+  padding: 2.8rem 1rem;
+}
+
+@media (max-width: 960px) {
+  .hero.two-band { min-height: 520px; }
+  .hero.two-band > .hero-inner { grid-template-columns: 1fr; }
+}
