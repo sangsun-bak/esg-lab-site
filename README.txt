@@ -1,25 +1,24 @@
-성공회대학교 ESG경영연구소 — 정적 웹사이트 패키지
-==================================================
+성공회대학교 ESG경영연구소 + SBR 저널 웹사이트 패키지
+------------------------------------------------------
+■ 새로 추가된 저널(SBR) 섹션
+- sbr/index.html : 저널 홈
+- sbr/editorial-policy.html : 편집규정
+- sbr/ethics.html : 윤리헌장
+- sbr/peer-review.html : 논문 심사절차
+- sbr/call-for-papers.html : 투고 안내(모집 공고)
+- sbr/archive.html : 발간논문 (다운로드 링크)
 
-■ 구성
-- index.html, about.html, team.html, research.html, publications.html, news.html, contact.html
-- assets/styles.css, assets/script.js, assets/logo-placeholder.svg
+■ 논문 PDF 업로드
+- assets/papers/ 폴더에 PDF를 넣고, sbr/archive.html의 링크 경로를 파일명에 맞게 조정하세요.
+  예) assets/papers/SBR_v1n1_p1.pdf
 
-■ 색상
-- 대표 색상: 녹색 계열 (styles.css의 :root 변수에서 수정 가능)
+■ 템플릿 파일(선택)
+- assets/templates/ 폴더에 투고 템플릿/윤리서약서 등을 업로드하고, call-for-papers.html의 링크를 맞춰주세요.
 
-■ 로고/이메일/주소 교체
-- 로고: assets/logo-placeholder.svg 파일을 실제 로고 파일로 교체(동일 파일명 권장)
-- 이메일/전화/주소: contact.html & footer 영역의 주석 TODO 부분을 직접 수정
+■ 내비게이션 추가
+- 상단 메뉴에 'SBR 저널' 링크가 포함되어 있습니다.
 
-■ 지도 삽입 (Contact 페이지)
-- Google Maps 공유 → "지도 퍼가기" → iframe 코드를 contact.html의 map-placeholder 위치에 붙여넣기
-
-■ 배포
-- 정적 호스팅(Vercel, Netlify, GitHub Pages, Cloudflare Pages) 어디든 업로드 가능
-- 혹은 학교 서버/웹호스팅에 폴더 그대로 업로드
-
-■ 메뉴 추가/삭제
-- 모든 .html 파일 상단의 <nav> 링크를 동일하게 업데이트
-
-문의: esg@skhu.ac.kr (샘플 값 — 실제 연락처로 교체하세요)
+■ 색상/로고/연락처 교체
+- assets/styles.css : :root 변수에서 색상 변경
+- assets/logo-placeholder.svg : 실제 로고로 교체
+- contact.html / footer : 이메일/전화/주소 직접 수정
