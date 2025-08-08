@@ -1,0 +1,67 @@
+:root {
+  --green: #0B7A4B;
+  --green-dark: #064C30;
+  --green-light: #E9F6EF;
+  --accent: #2F855A;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --bg: #ffffff;
+  --shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; background: var(--bg); color: var(--text);
+  font-family: Inter, Pretendard, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Apple SD Gothic Neo, '맑은 고딕', sans-serif;
+}
+a { color: var(--green-dark); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.container { width: min(1100px, 92vw); margin: 0 auto; }
+.site-header { position: sticky; top:0; background:#fff; border-bottom: 1px solid #eef1f1; z-index: 20; }
+.nav-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding: .9rem 0; }
+.brand { display:flex; align-items:center; gap:.6rem; }
+.logo { width:36px; height:36px; }
+.brand-text { font-weight:700; color: var(--green-dark); white-space:nowrap; }
+.site-nav { display:flex; gap:1rem; }
+.site-nav a { padding:.5rem .75rem; border-radius:.6rem; }
+.site-nav a:hover { background: var(--green-light); }
+.nav-toggle { display:none; font-size:1.4rem; background:none; border:none; }
+.hero { background: linear-gradient(135deg, var(--green-light), #f8fffb); border-bottom:1px solid #eef1f1; }
+.hero-inner { display:grid; grid-template-columns: 1.3fr .9fr; gap:2rem; padding: 3rem 0; }
+.hero-copy h1 { font-size: clamp(1.8rem, 2.4vw + 1rem, 3rem); margin:0 0 .5rem; color: var(--green-dark); }
+.lead { color: var(--muted); line-height:1.6; }
+.cta-row { display:flex; gap:.8rem; margin-top:1.2rem; }
+.btn { display:inline-block; padding:.8rem 1.1rem; border-radius:.8rem; font-weight:600; box-shadow: var(--shadow); }
+.btn-primary { background: var(--green); color:#fff; }
+.btn-ghost { background:#fff; color: var(--green-dark); border:1px solid #dbe7e2; }
+.hero-card { background:#fff; padding:1rem 1.2rem; border-radius:1rem; box-shadow: var(--shadow); border:1px solid #eef1f1; }
+.bullet { margin:.4rem 0 0 1rem; }
+.features { display:grid; grid-template-columns: repeat(3,1fr); gap:1rem; padding:2rem 0; }
+.feature { background:#fff; border:1px solid #eef1f1; padding:1.2rem; border-radius:1rem; box-shadow: var(--shadow); }
+.cards { display:grid; grid-template-columns: repeat(3,1fr); gap:1rem; padding: 0 0 2.2rem; }
+.card { background:#fff; border:1px solid #eef1f1; padding:1.2rem; border-radius:1rem; box-shadow: var(--shadow); }
+.card .muted { color: var(--muted); }
+.link { font-weight:600; }
+.page { padding: 2rem 0 3rem; }
+.team-grid { display:grid; grid-template-columns: 1fr; gap:1rem; }
+.person { display:flex; gap:1rem; align-items:flex-start; background:#fff; border:1px solid #eef1f1; padding:1rem; border-radius:1rem; box-shadow: var(--shadow); }
+.avatar { width:56px; height:56px; display:grid; place-items:center; background: var(--green-light); border-radius:50%; font-size:1.4rem; }
+.role { color: var(--accent); font-weight:600; font-size:.95rem; margin-left:.3rem; }
+.pub-list { line-height:1.9; }
+.news-item { background:#fff; border:1px solid #eef1f1; border-radius:1rem; padding:1rem; box-shadow: var(--shadow); }
+.contact-grid { display:grid; grid-template-columns: 1fr 1fr; gap:1rem; }
+.map-placeholder { height:260px; background: repeating-linear-gradient(45deg, #f3faf6, #f3faf6 12px, #e7f5ee 12px, #e7f5ee 24px); border:1px dashed #b7d9c8; border-radius:.8rem; display:grid; place-items:center; color:#408a6b; }
+.site-footer { background:#0e1f18; color:#d7e8df; margin-top:2rem; }
+.site-footer h4 { color:#fff; margin:.2rem 0 .6rem; }
+.footer-grid { display:grid; grid-template-columns: 2fr 1.2fr 1fr; gap:1rem; padding: 2rem 0; }
+.quick-links { list-style:none; padding-left:0; margin:0; display:grid; gap:.4rem; }
+.quick-links a { color:#cfe7dc; }
+.legal { padding: .8rem 0 1.2rem; border-top: 1px solid #1e3a2f; color:#b7c9c0; }
+@media (max-width: 960px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .features { grid-template-columns: 1fr; }
+  .cards { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .site-nav { display:none; flex-direction:column; gap:.6rem; padding:.6rem 0; }
+  .nav-toggle { display:block; }
+}

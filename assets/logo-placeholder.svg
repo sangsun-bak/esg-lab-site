@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0B7A4B"/>
+      <stop offset="100%" stop-color="#064C30"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="18" fill="url(#g)"/>
+  <g fill="#fff" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
+    <text x="60" y="56" font-size="18" font-weight="700">ESG</text>
+    <text x="60" y="78" font-size="9">RESEARCH</text>
+    <text x="60" y="92" font-size="9">INSTITUTE</text>
+  </g>
+</svg>
