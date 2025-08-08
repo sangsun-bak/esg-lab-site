@@ -101,7 +101,7 @@ header .logo img {
 }
 .hero.two-band > .hero-strip {
   grid-column: 2;
-  background: linear-gradient(135deg, var(--green-light), #f8fffb);
+  background: linear-gradient(135deg, rgba(173,230,201,0.8), rgba(248,255,251,0.8));
   border-bottom: 1px solid #eef1f1;
   min-height: 380px;
   z-index: 1;
@@ -152,7 +152,7 @@ header .logo img {
   left: 50%;
   transform: translateX(-50%);
   width: min(var(--content-width, 1200px), 100%);
-  background: linear-gradient(135deg, var(--green-light), #f8fffb);
+  background: linear-gradient(135deg, rgba(173,230,201,0.8), rgba(248,255,251,0.8));
   border-bottom: 1px solid #eef1f1;
   z-index: 1;
 }
