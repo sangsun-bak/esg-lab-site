@@ -8,17 +8,33 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{--green:#0B7A4B;--ink:#111827;--muted:#6b7280}
-    *{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,'맑은 고딕',sans-serif}
-    /* Custom toolbar */
-    .toolbar{position:fixed;top:0;left:0;right:0;height:48px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#f7faf9;border-bottom:1px solid #e5e7eb;z-index:9998}
-    .toolbar a,.toolbar button{border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:6px 10px;text-decoration:none;color:#111827;font-size:14px}
+    :root{
+      --green:#0B7A4B;
+      --ink:#111827;
+      --muted:#6b7280;
+      --cms-header:56px; /* Decap CMS header approximate height */
+      --toolbar:46px;    /* our custom toolbar height */
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:#fff;color:var(--ink);
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,'맑은 고딕',sans-serif}
+    /* Do NOT hide Decap header; keep publish buttons visible */
+    /* Custom toolbar sits BELOW the CMS header so it never overlaps publish buttons */
+    .toolbar{
+      position:fixed;left:0;right:0;top:var(--cms-header);
+      height:var(--toolbar);display:flex;align-items:center;gap:10px;
+      padding:0 12px;background:#f7faf9;border-bottom:1px solid #e5e7eb;z-index:999;
+    }
+    .toolbar a,.toolbar button{
+      border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:8px 12px;
+      text-decoration:none;color:#111827;cursor:pointer
+    }
     .toolbar .primary{background:var(--green);color:#fff;border-color:transparent}
-    .cms-root{margin-top:48px}
-    /* Keep Decap header visible so Publish/Save buttons appear */
-    /* Light tidy: reduce header shadow/spacing only */
-    .nc-appHeader, .nc-appBar { box-shadow:none !important; }
-    .nc-appHeader { border-bottom:1px solid #e5e7eb !important; }
+    .cms-root{margin-top:calc(var(--cms-header) + var(--toolbar));}
+    @media (max-width: 720px){
+      .toolbar{flex-wrap:wrap;height:auto;padding:8px 10px;gap:6px}
+      .cms-root{margin-top:calc(var(--cms-header) + 60px)}
+    }
   </style>
 </head>
 <body>
@@ -26,7 +42,7 @@
     <a href="/admin/" class="primary">← 대시보드로</a>
     <button onclick="openCollection('news')">소식/이벤트</button>
     <button onclick="openCollection('pubs')">발간저널</button>
-    <span style="color:var(--muted);font-size:13px;margin-left:6px">상단 Decap 헤더의 저장/게시 버튼을 사용하세요</span>
+    <span style="color:var(--muted);font-size:14px;margin-left:6px">로그인 후 두 게시판을 오가며 관리하세요</span>
   </div>
 
   <div class="cms-root"></div>
@@ -34,24 +50,22 @@
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-    // Prevent multiple token rewrites
+    // Ensure invite token is handled once (query -> hash) without loops
     (function ensureInviteTokenOnce(){
-      try {
-        const key='invite_token_fixed';
-        if(sessionStorage.getItem(key)) return;
+      try{
         const u = new URL(location.href);
         const token = u.searchParams.get('invite_token');
         if (token && !location.hash.includes('invite_token')) {
-          sessionStorage.setItem(key,'1');
-          location.replace('/admin/cms.html#/invite_token=' + token);
+          // replace to avoid back-button loop
+          history.replaceState(null, '', '/admin/cms.html#/invite_token=' + token);
         }
-      } catch(e){}
+      }catch(e){}
     })();
 
+    // Quick collection links (no reload if already there)
     function openCollection(name){
-      const base = '/admin/cms.html#/collections/';
-      const url = base + encodeURIComponent(name);
-      if (location.href !== url) location.href = url;
+      const dest = '/admin/cms.html#/collections/' + encodeURIComponent(name);
+      if (location.href !== dest) location.href = dest;
     }
   </script>
 </body>
