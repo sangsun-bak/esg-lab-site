@@ -1,17 +1,36 @@
-<!doctype html><html lang="ko"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CMS</title>
-<link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css">
-</head><body>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-<script>
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on('init', user => {
-    if (!user) {
-      window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
-    }
-  });
-}
-</script>
-</body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 CMS</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css">
+  <style>
+    /* Hide the default Decap top app bar to keep the UI clean */
+    #nc-root [data-testid="app-header"],
+    #nc-root header[role="banner"],
+    #nc-root .MuiAppBar-root,
+    #nc-root .AppHeader,
+    #nc-root .nc-appHeader { display:none !important; }
+    /* Add a bit of space since header is hidden */
+    #nc-root [data-testid="app-main"] { padding-top: 12px !important; }
+  </style>
+</head>
+<body>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    // If invite_token comes as query, translate to hash for widget
+    (function(){
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var token = params.get('invite_token');
+        if (token && window.location.hash.indexOf('invite_token=') === -1) {
+          window.location.replace(window.location.pathname + '#/invite_token=' + token);
+        }
+      } catch(e){}
+    })();
+  </script>
+</body>
+</html>
