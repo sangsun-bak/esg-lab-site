@@ -1,0 +1,38 @@
+backend:
+  name: git-gateway
+  branch: main
+
+publish_mode: editorial_workflow
+local_backend: false
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+locale: "ko"
+
+collections:
+  - name: "news"
+    label: "소식/이벤트 게시판"
+    files:
+      - file: "assets/data/news.json"
+        label: "게시글"
+        name: "newslist"
+        fields:
+          - label: "게시글들"
+            name: "items"
+            widget: "list"
+            collapsed: false
+            summary: "{{fields.date}} — {{fields.title}}"
+            fields:
+              - { label: "ID(고유)", name: "id", widget: "string" }
+              - { label: "제목", name: "title", widget: "string" }
+              - { label: "날짜", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
+              - { label: "태그", name: "tags", widget: "list", required: false }
+              - { label: "본문", name: "body", widget: "markdown" }
+              - label: "첨부파일들"
+                name: "attachments"
+                widget: "list"
+                required: false
+                fields:
+                  - { label: "파일", name: "file", widget: "file" }
+                  - { label: "설명(선택)", name: "label", widget: "string", required: false }
