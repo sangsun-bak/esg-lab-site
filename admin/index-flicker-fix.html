@@ -1,0 +1,69 @@
+<style>
+  #adm-auth{visibility:hidden}
+  #adm-auth.ready{visibility:visible}
+</style>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+(function(){
+  if (window.__admInitOnce__) return;
+  window.__admInitOnce__ = true;
+
+  const host = document.querySelector('#adm-auth');
+
+  if (location.hash && /access_token|token|provider/.test(location.hash)) {
+    history.replaceState(null, "", location.pathname);
+  }
+
+  function h(tag, attrs, text){
+    const el = document.createElement(tag);
+    if (attrs) for (const k in attrs) el.setAttribute(k, attrs[k]);
+    if (text) el.textContent = text;
+    return el;
+  }
+
+  function render(user){
+    if (!host) return;
+    requestAnimationFrame(() => {
+      host.innerHTML = "";
+      if (user){
+        host.append(
+          h("a", { href:"/admin/cms.html", class:"adm-btn adm-btn--primary" }, "관리자 열기"),
+          h("button", { class:"adm-btn", id:"adm-logout" }, "로그아웃")
+        );
+        const logoutBtn = host.querySelector("#adm-logout");
+        if (logoutBtn) logoutBtn.onclick = () => netlifyIdentity.logout();
+      } else {
+        host.append(
+          h("button", { class:"adm-btn adm-btn--primary", id:"adm-login" }, "로그인"),
+          h("a", { href:"/", class:"adm-btn" }, "홈으로")
+        );
+        const loginBtn = host.querySelector("#adm-login");
+        if (loginBtn) loginBtn.onclick = () => netlifyIdentity.open();
+      }
+      host.classList.add("ready");
+    });
+  }
+
+  function safeUser(){
+    try { return netlifyIdentity.currentUser && netlifyIdentity.currentUser(); }
+    catch(e){ return null; }
+  }
+
+  function wire(){
+    if (!window.netlifyIdentity || !netlifyIdentity.on) {
+      setTimeout(wire, 80);
+      return;
+    }
+    render(safeUser());
+    netlifyIdentity.on("init",  render);
+    netlifyIdentity.on("login", () => render(netlifyIdentity.currentUser()));
+    netlifyIdentity.on("logout", () => render(null));
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wire, { once:true });
+  } else {
+    wire();
+  }
+})();
+</script>
