@@ -84,6 +84,62 @@ document.addEventListener('DOMContentLoaded', ()=>{
 });
 
 
+
+
+// /* Markdown support start */
+let _markedReady = false;
+async function ensureMarked() {
+  if (_markedReady) return true;
+  try {
+    if (!window.marked) {
+      // dynamically load marked from CDN
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+        s.onload = resolve; s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+    _markedReady = !!window.marked;
+  } catch(e) { console.warn('marked load failed', e); _markedReady = false; }
+  return _markedReady;
+}
+
+function looksLikeHtml(str) {
+  return /<\/?[a-z][\s\S]*>/i.test(str || '');
+}
+
+// Very small fallback: convert blank-line separated paragraphs and line breaks
+function simpleMarkdownToHtml(md) {
+  if (!md) return '';
+  // escape basic HTML to avoid injection in fallback
+  const esc = md.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // paragraphs: split by two or more newlines
+  return esc.split(/\n{2,}/).map(p => '<p>' + p.replace(/\n/g,'<br>') + '</p>').join('\n');
+}
+
+async function renderContentHtml(raw) {
+  if (!raw) return '';
+  if (looksLikeHtml(raw)) return raw; // already HTML (migrated old posts)
+  const ok = await ensureMarked();
+  if (ok && window.marked) {
+    try { return window.marked.parse(raw); } catch(e) { console.warn('marked parse fail', e); }
+  }
+  return simpleMarkdownToHtml(raw);
+}
+
+function stripToText(htmlOrMd) {
+  if (!htmlOrMd) return '';
+  // If it's markdown, just remove common markdown syntax for excerpt
+  if (!looksLikeHtml(htmlOrMd)) {
+    return htmlOrMd.replace(/[#>*_`~\-!\[\]\(\)]/g,' ').replace(/\s+/g,' ').trim();
+  }
+  // else HTML -> text
+  const tmp = document.createElement('div');
+  tmp.innerHTML = htmlOrMd;
+  return (tmp.textContent || '').trim();
+}
+// /* Markdown support end */
 // ===== News Board & Latest Notices =====
 async function fetchNewsEntries() {
   try {
@@ -127,9 +183,7 @@ function renderBoard(entries) {
     const excerpt = document.createElement('div');
     excerpt.className = 'excerpt';
     // Simple excerpt from content (strip tags)
-    const tmp = document.createElement('div');
-    tmp.innerHTML = item.content || '';
-    const text = (tmp.textContent || '').trim().slice(0, 160);
+    const text = stripToText(item.content || '').slice(0, 160);
     excerpt.textContent = text;
     card.appendChild(h3);
     card.appendChild(meta);
@@ -144,7 +198,7 @@ function renderBoard(entries) {
   }
 }
 
-function openNewsModal(item) {
+async function openNewsModal(item) {
   let modal = document.getElementById('news-modal');
   if (!modal) {
     modal = document.createElement('div');
@@ -164,7 +218,7 @@ function openNewsModal(item) {
   meta.textContent = item.date;
   const body = document.createElement('div');
   body.className = 'modal-body';
-  body.innerHTML = item.content || '';
+  /* render markdown or html */
   const files = document.createElement('div');
   if (item.attachments && item.attachments.length) {
     const ul = document.createElement('ul');
@@ -185,6 +239,9 @@ function openNewsModal(item) {
   close.addEventListener('click', () => { modal.style.display = 'none'; });
   box.appendChild(title);
   box.appendChild(meta);
+  // render content
+  const _html = await renderContentHtml(item.content || '');
+  body.innerHTML = _html;
   box.appendChild(body);
   box.appendChild(files);
   box.appendChild(close);
