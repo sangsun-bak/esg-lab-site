@@ -1,0 +1,3 @@
+# Normalize admin routes without triggering redirects that reload the page in the browser
+/admin      /admin/index.html 200
+/admin/     /admin/index.html 200

@@ -1,0 +1,70 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+publish_mode: simple
+locale: "ko"
+
+collections:
+  - name: "news"
+    label: "소식/이벤트"
+    label_singular: "소식"
+    description: "소식/이벤트 게시판 글을 관리합니다"
+    files:
+      - name: "news_json"
+        label: "소식 목록 (news.json)"
+        file: "assets/data/news.json"
+        format: json
+        fields:
+          - label: "소식 목록"
+            name: "entries"
+            widget: list
+            summary: "{{fields.date}} — {{fields.title}}"
+            fields:
+              - { label: "ID (고유)", name: "id", widget: "string" }
+              - { label: "날짜", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
+              - { label: "제목", name: "title", widget: "string" }
+              - { label: "본문", name: "content", widget: "markdown" }
+              - label: "첨부파일"
+                name: "attachments"
+                widget: "list"
+                collapsed: true
+                fields:
+                  - { label: "파일", name: "file", widget: "file" }
+                  - { label: "표시 이름(선택)", name: "name", widget: "string", required: false }
+
+  - name: "pubs"
+    label: "발간저널"
+    label_singular: "논문"
+    description: "권·호·논문, PDF/DOI/초록을 관리합니다"
+    files:
+      - name: "pubs_json"
+        label: "발간논문 목록 (pubs.json)"
+        file: "assets/data/pubs.json"
+        format: json
+        fields:
+          - label: "논문 목록"
+            name: "entries"
+            widget: list
+            summary: "Vol.{{fields.volume}} No.{{fields.issue}} — {{fields.title}}"
+            fields:
+              - { label: "ID (고유)", name: "id", widget: "string" }
+              - { label: "날짜", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
+              - { label: "제목", name: "title", widget: "string" }
+              - label: "저자"
+                name: "authors"
+                widget: "list"
+                field: { label: "이름", name: "name", widget: "string" }
+              - { label: "초록 (Markdown)", name: "abstract", widget: "markdown", required: false }
+              - { label: "권 (Vol.)", name: "volume", widget: "number", value_type: "int" }
+              - { label: "호 (Issue)", name: "issue", widget: "number", value_type: "int" }
+              - { label: "페이지 (예: 1–20)", name: "pages", widget: "string", required: false }
+              - { label: "DOI", name: "doi", widget: "string", required: false }
+              - label: "PDF 파일"
+                name: "pdf"
+                widget: "file"
+                media_folder: "assets/papers"
+                public_folder: "/assets/papers"
