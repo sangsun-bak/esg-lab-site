@@ -1,3 +1,16 @@
 {
-  "entries": []
+  "entries": [
+    {
+      "id": "2025-01-01",
+      "date": "2025-08-09",
+      "title": "협동조합의 미래",
+      "authors": [
+        "김수한무"
+      ],
+      "volume": 8,
+      "issue": 2,
+      "pages": "12-23",
+      "pdf": "/assets/papers/mpra_paper_101714.pdf"
+    }
+  ]
 }
