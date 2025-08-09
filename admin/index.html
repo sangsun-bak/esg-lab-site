@@ -1,48 +1,49 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>관리자 | 소식/이벤트 게시판</title>
-  <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css">
-</head>
-<body>
-  <!-- Netlify Identity Widget for login -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  <script>
-    // Redirect to site after logout/login if needed
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on('init', user => {
-        if (!user) {
-          window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
-        }
-      });
-    }
-  </script>
-
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>관리자 대시보드 | ESG 경영연구소</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#0B7A4B;--ink:#111827;--muted:#6b7280;--bg:#f7faf9}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,'맑은 고딕',sans-serif}
+a{text-decoration:none;color:var(--green)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px}
+header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .logo{width:42px;height:42px;border-radius:12px;background:#e6f4ee;display:grid;place-items:center;color:var(--green);font-weight:700}
+h1{font-size:22px;margin:0}.muted{color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,.05)}
+.card h3{margin:0 0 6px 0}.card p{margin:0 0 12px 0;color:#4b5563}
+.btn{display:inline-block;padding:10px 14px;border-radius:12px;border:1px solid #d1d5db;background:#fff}
+.btn-primary{background:var(--green);color:#fff;border-color:transparent}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin:10px 0 18px 0}
+.id-btns button{border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+footer{margin-top:26px;color:#6b7280;font-size:13px}
+</style></head><body>
+<div class="wrap">
+<header><div class="brand"><div class="logo">ESG</div><div><h1>관리자 대시보드</h1><div class="muted">콘텐츠를 선택해 관리하세요</div></div></div></header>
+<div class="topbar"><div class="muted">로그인 상태에서 두 게시판을 자유롭게 오갈 수 있습니다</div>
+<div class="id-btns"><button id="loginBtn">로그인</button><button id="logoutBtn">로그아웃</button></div></div>
+<section class="grid">
+  <div class="card"><h3>소식 / 이벤트</h3><p>공지, 이벤트, 파일 첨부 등을 게시합니다</p>
+    <div class="row">
+      <a class="btn btn-primary" href="/admin/cms.html#/collections/news">관리 화면 열기</a>
+      <a class="btn" href="/news.html" target="_blank">사이트에서 보기</a>
+    </div></div>
+  <div class="card"><h3>발간저널 (아카이브)</h3><p>권·호·논문, 초록/DOI/PDF 업로드를 관리합니다</p>
+    <div class="row">
+      <a class="btn btn-primary" href="/admin/cms.html#/collections/pubs">관리 화면 열기</a>
+      <a class="btn" href="/publications.html" target="_blank">사이트에서 보기</a>
+    </div></div>
+</section>
+<footer>© ESG 경영연구소 관리자</footer></div>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
-  // Normalize invite token in query to hash for the widget
-  (function(){
-    try {
-      var params = new URLSearchParams(window.location.search);
-      var token = params.get('invite_token');
-      if (token && window.location.hash.indexOf('invite_token=') === -1) {
-        window.location.replace(window.location.pathname + '#/invite_token=' + token);
-      }
-    } catch(e) {}
-  })();
-  if (window.netlifyIdentity) {
-    // Ensure widget boot if hash already set
-    window.netlifyIdentity.on('init', function(user){
-      if (!user && window.location.hash.indexOf('invite_token=') !== -1) {
-        // The widget should auto-handle; ensure panel opens
-        try { window.netlifyIdentity.open('login'); } catch(e) {}
-      }
-    });
-  }
-</script>
-
-</body>
-</html>
+const loginBtn=document.getElementById('loginBtn');const logoutBtn=document.getElementById('logoutBtn');
+if(window.netlifyIdentity){netlifyIdentity.on('init',u=>{loginBtn.style.display=u?'none':'inline-block';logoutBtn.style.display=u?'inline-block':'none'});
+netlifyIdentity.on('login',()=>location.reload());netlifyIdentity.on('logout',()=>location.reload());
+loginBtn&&loginBtn.addEventListener('click',()=>netlifyIdentity.open());logoutBtn&&logoutBtn.addEventListener('click',()=>netlifyIdentity.logout());}
+</script></body></html>
