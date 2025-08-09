@@ -176,3 +176,12 @@ header .logo img {
 .news-list li { margin: .2rem 0; }
 .news-list a { text-decoration: none; }
 .news-list a:hover { text-decoration: underline; }
+
+
+/* Modal styles for news board */
+.news-modal { position: fixed; inset: 0; display:none; z-index: 100; }
+.news-modal .modal-overlay { position:absolute; inset:0; background: rgba(0,0,0,.45); }
+.news-modal .modal-box { position:relative; max-width: 840px; width: calc(100% - 2rem); margin: 6vh auto; background:#fff; border-radius: 1rem; padding: 1.2rem; box-shadow: var(--shadow); }
+.news-modal .modal-body { margin: .8rem 0 1rem; line-height: 1.7; }
+.news-item .excerpt { margin-top: .4rem; color: var(--muted); }
+

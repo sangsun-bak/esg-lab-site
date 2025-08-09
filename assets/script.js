@@ -71,3 +71,132 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if (document.getElementById('news-brief')) renderNewsBrief('news-brief', 4);
   if (document.getElementById('news-list-wrap')) renderNewsList('news-list-wrap');
 });
+
+
+// ===== News Board & Latest Notices =====
+async function fetchNewsEntries() {
+  try {
+    const res = await fetch('/assets/data/news.json', { cache: 'no-store' });
+    const data = await res.json();
+    // Support both array root and { entries: [] }
+    const arr = Array.isArray(data) ? data : (Array.isArray(data.entries) ? data.entries : []);
+    // Normalize date to ISO string and sort desc
+    const norm = arr.map(x => ({
+      id: x.id || '',
+      date: (x.date || '').slice(0,10),
+      title: x.title || '',
+      content: x.content || '',
+      attachments: Array.isArray(x.attachments) ? x.attachments : []
+    }));
+    norm.sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    return norm;
+  } catch (e) {
+    console.error('Failed to load news.json', e);
+    return [];
+  }
+}
+
+function renderLatest3(entries) {
+  const list = document.querySelector('#latest-news .news-list');
+  if (!list) return;
+  list.innerHTML = '';
+  entries.slice(0,3).forEach(item => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '/news.html#' + encodeURIComponent(item.id);
+    a.textContent = `[${item.date}] ${item.title}`;
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+}
+
+function renderBoard(entries) {
+  const board = document.querySelector('#news-board');
+  if (!board) return;
+  board.innerHTML = '';
+  entries.forEach(item => {
+    const card = document.createElement('article');
+    card.className = 'news-item';
+    const h3 = document.createElement('h3');
+    const a = document.createElement('a');
+    a.href = 'javascript:void(0)';
+    a.textContent = item.title;
+    a.addEventListener('click', () => openNewsModal(item));
+    h3.appendChild(a);
+    const meta = document.createElement('div');
+    meta.className = 'muted';
+    meta.textContent = item.date;
+    const excerpt = document.createElement('div');
+    excerpt.className = 'excerpt';
+    // Simple excerpt from content (strip tags)
+    const tmp = document.createElement('div');
+    tmp.innerHTML = item.content || '';
+    const text = (tmp.textContent || '').trim().slice(0, 160);
+    excerpt.textContent = text;
+    card.appendChild(h3);
+    card.appendChild(meta);
+    card.appendChild(excerpt);
+    board.appendChild(card);
+  });
+  // If URL hash matches an item id, open it automatically
+  if (location.hash) {
+    const id = decodeURIComponent(location.hash.substring(1));
+    const target = entries.find(e => e.id === id);
+    if (target) openNewsModal(target);
+  }
+}
+
+function openNewsModal(item) {
+  let modal = document.getElementById('news-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'news-modal';
+    document.body.appendChild(modal);
+  }
+  modal.className = 'news-modal';
+  modal.innerHTML = '';
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  const title = document.createElement('h3');
+  title.textContent = item.title;
+  const meta = document.createElement('div');
+  meta.className = 'muted';
+  meta.textContent = item.date;
+  const body = document.createElement('div');
+  body.className = 'modal-body';
+  body.innerHTML = item.content || '';
+  const files = document.createElement('div');
+  if (item.attachments && item.attachments.length) {
+    const ul = document.createElement('ul');
+    item.attachments.forEach(att => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = att.file || att.url || '#';
+      a.target = '_blank';
+      a.textContent = att.name || att.file || '첨부파일';
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    files.appendChild(ul);
+  }
+  const close = document.createElement('button');
+  close.className = 'btn btn-sm';
+  close.textContent = '닫기';
+  close.addEventListener('click', () => { modal.style.display = 'none'; });
+  box.appendChild(title);
+  box.appendChild(meta);
+  box.appendChild(body);
+  box.appendChild(files);
+  box.appendChild(close);
+  modal.appendChild(overlay);
+  modal.appendChild(box);
+  modal.style.display = 'block';
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const news = await fetchNewsEntries();
+  renderLatest3(news);
+  renderBoard(news);
+});

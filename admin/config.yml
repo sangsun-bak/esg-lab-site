@@ -2,37 +2,36 @@ backend:
   name: git-gateway
   branch: main
 
-publish_mode: editorial_workflow
-local_backend: false
-
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
 
+publish_mode: simple
 locale: "ko"
 
 collections:
   - name: "news"
-    label: "소식/이벤트 게시판"
+    label: "소식/이벤트"
+    label_singular: "소식"
+    description: "소식/이벤트 게시판 글을 관리합니다"
     files:
-      - file: "assets/data/news.json"
-        label: "게시글"
-        name: "newslist"
+      - name: "news_json"
+        label: "소식 목록 (news.json)"
+        file: "assets/data/news.json"
+        format: json
         fields:
-          - label: "게시글들"
-            name: "items"
-            widget: "list"
-            collapsed: false
+          - label: "소식 목록"
+            name: "entries"
+            widget: list
             summary: "{{fields.date}} — {{fields.title}}"
             fields:
-              - { label: "ID(고유)", name: "id", widget: "string" }
-              - { label: "제목", name: "title", widget: "string" }
+              - { label: "ID (자동/고유)", name: "id", widget: "string", hint: "영문/숫자/하이픈으로 고유값. 예: 2025-08-10-sbr-cfp" }
               - { label: "날짜", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
-              - { label: "태그", name: "tags", widget: "list", required: false }
-              - { label: "본문", name: "body", widget: "markdown" }
-              - label: "첨부파일들"
+              - { label: "제목", name: "title", widget: "string" }
+              - { label: "본문", name: "content", widget: "markdown" }
+              - label: "첨부파일"
                 name: "attachments"
                 widget: "list"
-                required: false
+                collapsed: true
                 fields:
                   - { label: "파일", name: "file", widget: "file" }
-                  - { label: "설명(선택)", name: "label", widget: "string", required: false }
+                  - { label: "표시 이름(선택)", name: "name", widget: "string", required: false }
