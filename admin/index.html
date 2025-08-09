@@ -1,48 +1,48 @@
-<!doctype html><html lang="ko"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>관리자 대시보드</title>
-<link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css">
-<style>
-  body{font-family:Inter,system-ui,Arial,sans-serif;margin:0;padding:2rem;background:#f6f8f9}
-  .wrap{max-width:900px;margin:0 auto}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
-  .card{background:#fff;border:1px solid #e5e9ef;border-radius:16px;padding:1.2rem;text-decoration:none;color:#111;box-shadow:0 6px 20px rgba(0,0,0,.04)}
-  .card h3{margin:.2rem 0 .4rem}
-  .card p{margin:0;color:#666}
-  header{display:flex;justify-content:space-between;align-items:center}
-  .btn{padding:.5rem .8rem;border-radius:10px;border:1px solid #cfd7df;background:#fff;cursor:pointer}
-</style>
-</head><body>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<div class="wrap">
-  <header>
-    <h1>관리자 대시보드</h1>
-    <div>
-      <button class="btn" id="loginBtn">로그인/계정</button>
-      <a class="btn" href="/admin/cms.html">CMS 열기</a>
-    </div>
-  </header>
-  <div class="grid">
-    <a class="card" href="/admin/cms.html#/collections/news">
-      <h3>소식 / 이벤트</h3>
-      <p>게시글 작성 · 수정 · 첨부</p>
-    </a>
-    <a class="card" href="/admin/cms.html#/collections/pubs">
-      <h3>발간논문</h3>
-      <p>PDF 업로드 · 초록 · 메타데이터</p>
-    </a>
-  </div>
-</div>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 | 소식/이벤트 게시판</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css">
+</head>
+<body>
+  <!-- Netlify Identity Widget for login -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    // Redirect to site after logout/login if needed
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', user => {
+        if (!user) {
+          window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
+        }
+      });
+    }
+  </script>
+
 <script>
-  if (window.netlifyIdentity) {
-    const btn = document.getElementById('loginBtn');
-    btn.addEventListener('click', () => window.netlifyIdentity.open());
-  }
-  // Invite token passthrough
+  // Normalize invite token in query to hash for the widget
   (function(){
-    const h = location.hash || location.search;
-    const m = h.match(/invite_token=([^&]+)/);
-    if(m){ location.href = '/admin/cms.html#/invite_token=' + m[1]; }
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var token = params.get('invite_token');
+      if (token && window.location.hash.indexOf('invite_token=') === -1) {
+        window.location.replace(window.location.pathname + '#/invite_token=' + token);
+      }
+    } catch(e) {}
   })();
+  if (window.netlifyIdentity) {
+    // Ensure widget boot if hash already set
+    window.netlifyIdentity.on('init', function(user){
+      if (!user && window.location.hash.indexOf('invite_token=') !== -1) {
+        // The widget should auto-handle; ensure panel opens
+        try { window.netlifyIdentity.open('login'); } catch(e) {}
+      }
+    });
+  }
 </script>
-</body></html>
+
+</body>
+</html>
