@@ -171,3 +171,8 @@ header .logo img {
   .hero.two-band { min-height: 520px; }
   .hero.two-band > .hero-inner { grid-template-columns: 1fr; }
 }
+
+.news-list { margin: .6rem 0 0 1rem; }
+.news-list li { margin: .2rem 0; }
+.news-list a { text-decoration: none; }
+.news-list a:hover { text-decoration: underline; }
