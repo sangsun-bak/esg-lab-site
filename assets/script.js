@@ -37,6 +37,10 @@ async function renderNewsBrief(ulId, limit=4) {
     a.href = it.href;
     a.textContent = `(${it.date}) ${it.title}`;
     li.appendChild(a);
+    listEl.appendChild(li);
+  });
+}) ${it.title}`;
+    li.appendChild(a);
     listEl.appendChild(a);
     a.prepend(li);
   });
