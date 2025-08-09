@@ -1,62 +1,84 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>성공회대학교 ESG경영연구소 · Social Business Review (SBR)</title>
-<meta name="description" content="성공회대학교 ESG경영연구소 · Social Business Review 저널" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/styles.css" />
-<script defer src="/assets/script.js"></script>
-</head><body><header class="site-header">
-  <div class="container nav-row">
-    <a class="brand" href="index.html">
-      <img src="/assets/logo.webp" class="logo" alt="연구소 로고 자리">
-      
-    </a>
-    <button class="nav-toggle" aria-label="메뉴 열기" aria-expanded="false">☰</button>
-    <nav class="site-nav">
-      <a href="/about.html">연구소 소개</a>
-      <a href="/team.html">연구진</a>
-      <a href="/research.html">연구/프로젝트</a>
-      <a href="/publications.html">연구성과</a>
-      <a href="/news.html">소식/이벤트</a>
-      <a href="/sbr/index.html"><strong>SBR 저널</strong></a>
-      <a href="/contact.html">문의</a>
-    </nav>
-  </div>
-</header>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>연구소 소개 | ESG경영연구소</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <meta name="description" content="ESG경영연구소 소개">
+  <style>
+    /* 페이지 전용 최소 보완 (기존 전역 스타일 유지) */
+    .about-wrap{max-width:1100px;margin:40px auto;padding:0 16px}
+    .lead{font-size:1.05rem;line-height:1.9;color:#333}
+    .grid{display:grid;grid-template-columns:1fr;gap:28px;margin-top:16px}
+    @media (min-width: 960px){ .grid{grid-template-columns: 1fr 1fr} }
+    .card{border:1px solid #eee;border-radius:14px;background:#fff}
+    .card .body{padding:18px 20px}
+    .card h2{margin-top:0}
+    .kws{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+    .kw{font-size:.9rem;border:1px solid #ddd;border-radius:9999px;padding:6px 10px;background:#fafafa}
+    .timeline{border-left:3px solid #eee;padding-left:14px;margin-left:6px}
+    .timeline .item{margin:10px 0}
+    .timeline .item .year{font-weight:700;margin-right:6px}
+    .list-compact li{margin-bottom:.35rem;line-height:1.8}
+    .muted{color:#666}
+  </style>
+</head>
+<body>
+  <main class="about-wrap">
+    <header>
+      <h1>연구소 소개</h1>
+      <p class="lead">
+        ESG경영연구소는 사회적가치와 혁신을 중심으로 기업과 조직의 지속가능한 성장을 연구하고 지원합니다.
+        1998년 출범 이후 사회적경제 영역에서 축적한 실천과 성과를 바탕으로, ESG 경영 전반으로 활동을 확장하고 있습니다.
+      </p>
+      <div class="kws" aria-label="핵심 키워드">
+        <span class="kw">사회적가치</span>
+        <span class="kw">ESG</span>
+        <span class="kw">혁신</span>
+        <span class="kw">경영</span>
+        <span class="kw">기업</span>
+        <span class="kw">사회적경제</span>
+        <span class="kw">협동조합</span>
+        <span class="kw">사회적기업</span>
+        <span class="kw">지속가능성</span>
+      </div>
+    </header>
 
-<main class="container page">
-<h1>연구소 소개</h1>
-<p class="lead">ESG 전 영역의 학제 간 연구와 실천을 연결합니다.</p>
-<h2>비전</h2><p>지속가능성과 포용성에 기반한 경영 혁신 허브.</p>
-<h2>미션</h2><ul class="bullet"><li>근거기반 ESG 의사결정 지원</li><li>교육·현장 연계 인재 양성</li><li>산학·공공 협력 모델 발굴</li></ul>
-</main><footer class="site-footer">
-  <div class="container footer-grid">
-    <div>
-      <h4>성공회대학교 ESG경영연구소</h4>
-      <p>지속가능한 미래를 위한 연구 및 교육, 산업·공공 협력</p>
-    </div>
-    <div>
-      <h4>연락처</h4>
-      <p><strong>이메일:</strong> <a href="mailto:esg@skhu.ac.kr">esg@skhu.ac.kr</a> <!-- TODO: 이메일 수정 --></p>
-      <p><strong>전화:</strong> 02-000-0000 <!-- TODO: 전화번호 수정 --></p>
-      <p><strong>주소:</strong> (우) 00000 서울시 ○○구 ○○로 00, 성공회대학교 <!-- TODO: 주소 수정 --></p>
-    </div>
-    <div>
-      <h4>SBR 바로가기</h4>
-      <ul class="quick-links">
-        <li><a href="/sbr/index.html">저널 홈</a></li>
-        <li><a href="sbr/editorial-policy.html">편집규정</a></li>
-        <li><a href="sbr/ethics.html">윤리헌장</a></li>
-        <li><a href="sbr/peer-review.html">심사절차</a></li>
-        <li><a href="sbr/call-for-papers.html">투고 안내/모집 공고</a></li>
-        <li><a href="sbr/archive.html">발간논문(아카이브)</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="container legal">
-    <small>© <span id="year"></span> 성공회대학교 ESG경영연구소 · Social Business Review (SBR)</small>
-  </div>
-</footer>
-</body></html>
+    <section class="grid" aria-label="비전과 미션">
+      <article class="card">
+        <div class="body">
+          <h2>Vision</h2>
+          <p class="lead" style="font-size:1.02rem">
+            <strong>“사회적가치와 혁신을 기반으로 ESG 경영의 미래를 설계하는 선도 연구소”</strong>
+          </p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="body">
+          <h2>Mission</h2>
+          <ul class="list-compact">
+            <li><strong>연구(Research)</strong> — ESG·사회적경제·지속가능경영의 이론 및 실천 연구</li>
+            <li><strong>교육(Education)</strong> — 경영자·실무자·미래세대 대상 교육 프로그램 개발·확산</li>
+            <li><strong>산업협력(Industry)</strong> — 기업·공공·비영리와의 프로젝트로 경영 혁신 지원</li>
+            <li><strong>사회적영향(Impact)</strong> — 정책 제안과 현장 적용으로 사회적가치 창출</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top:24px" aria-label="연혁">
+      <div class="body">
+        <h2>연혁</h2>
+        <div class="timeline">
+          <div class="item"><span class="year">1998</span> <strong>유통경영연구소</strong>로 출범</div>
+          <div class="item"><span class="year">2000s</span> <strong>협동조합경영연구소</strong>로 개칭 — 협동조합·사회적기업 중심의 연구·교육·산학용역</div>
+          <div class="item"><span class="year">2024</span> 활동 영역 확장에 따라 <strong>ESG경영연구소</strong>로 개명</div>
+        </div>
+        <p class="muted">* 사회적경제에서의 전문성과 성과를 기반으로 ESG 전 영역으로 확장하고 있습니다.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
