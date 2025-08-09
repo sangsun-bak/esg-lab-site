@@ -13,6 +13,18 @@
       "issue": 2,
       "pages": "12-23",
       "pdf": "/assets/papers/mpra_paper_101714.pdf"
+    },
+    {
+      "id": "2024-10-10",
+      "date": "2024-10-10",
+      "title": "인공지능 시대와 협동조합",
+      "authors": [
+        "두루미",
+        "동방삭"
+      ],
+      "volume": 8,
+      "issue": 1,
+      "pdf": "/assets/papers/ziegler-hagemann-2015-testing-the-unidimensionality-of-items.pdf"
     }
   ]
 }
