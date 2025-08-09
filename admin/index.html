@@ -21,5 +21,28 @@
       });
     }
   </script>
+
+<script>
+  // Normalize invite token in query to hash for the widget
+  (function(){
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var token = params.get('invite_token');
+      if (token && window.location.hash.indexOf('invite_token=') === -1) {
+        window.location.replace(window.location.pathname + '#/invite_token=' + token);
+      }
+    } catch(e) {}
+  })();
+  if (window.netlifyIdentity) {
+    // Ensure widget boot if hash already set
+    window.netlifyIdentity.on('init', function(user){
+      if (!user && window.location.hash.indexOf('invite_token=') !== -1) {
+        // The widget should auto-handle; ensure panel opens
+        try { window.netlifyIdentity.open('login'); } catch(e) {}
+      }
+    });
+  }
+</script>
+
 </body>
 </html>

@@ -1,3 +1,14 @@
+
+// Netlify Identity invite token auto-redirect
+(function(){
+  try {
+    var h = window.location.hash || '';
+    if (h.indexOf('invite_token=') !== -1 && window.location.pathname !== '/admin/') {
+      window.location.replace('/admin/' + h);
+    }
+  } catch(e) {}
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
   const toggle = document.querySelector('.nav-toggle');
