@@ -1,16 +1,20 @@
 {
   "entries": [
     {
-      "id": "2025-01-01",
-      "date": "2025-08-09",
-      "title": "협동조합의 미래",
+      "id": "hello-paper",
+      "date": "2025-08-01",
+      "title": "테스트 논문",
+      "abstract": "초록 예시입니다.",
+      "pdf": "/assets/papers/sample.pdf",
+      "volume": 1,
+      "issue": 1,
+      "pages": "1–10",
+      "doi": "",
       "authors": [
-        "김수한무"
-      ],
-      "volume": 8,
-      "issue": 2,
-      "pages": "12-23",
-      "pdf": "/assets/papers/ziegler-hagemann-2015-testing-the-unidimensionality-of-items.pdf"
+        {
+          "name": "홍길동"
+        }
+      ]
     }
   ]
 }

@@ -1,36 +1,19 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>발간논문 아카이브 | ESG 경영연구소 · SBR</title>
-  <link rel="stylesheet" href="/assets/styles.css" />
-  <script defer src="/assets/script.js"></script>
-</head>
-<body>
-  <header class="site-header">
-    <div class="container nav-row">
-      <a class="brand" href="/index.html">
-        <img src="/assets/logo.webp" class="logo" alt="연구소 로고">
-        <span>ESG 경영연구소 · SBR</span>
-      </a>
-      <nav class="main-nav">
-        <a href="/index.html">홈</a>
-        <a href="/publications.html">발간논문</a>
-        <a href="/news.html">소식/이벤트</a>
-        <a href="/contact.html">문의</a>
-      </nav>
-    </div>
-  </header>
-  <main class="container">
-    <h1>발간논문 (Archive)</h1>
-    <div id="pubs-archive"></div>
-    <div id="pubs-modal" style="display:none"></div>
-  </main>
-  <footer class="site-footer">
-    <div class="container legal">
-      <small>© <span id="year"></span> 성공회대학교 ESG경영연구소 · Social Business Review (SBR)</small>
-    </div>
-  </footer>
-</body>
-</html>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SBR 아카이브</title><link rel="stylesheet" href="/assets/styles.css"><style>
+
+/* Modal & board basics (safe additions) */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45)}
+.modal-box{position:fixed;left:50%;top:10vh;transform:translateX(-50%);max-width:840px;width:calc(100% - 2rem);background:#fff;border-radius:1rem;box-shadow:0 6px 20px rgba(0,0,0,.08);padding:1rem;z-index:1000}
+.modal-body{line-height:1.7}
+.news-item{background:#fff;border:1px solid #eef1f1;border-radius:1rem;padding:1rem;box-shadow:0 6px 20px rgba(0,0,0,.04);margin:.6rem 0}
+.btn{display:inline-block;padding:.5rem .8rem;border:1px solid #d1d5db;border-radius:.6rem;background:#fff;text-decoration:none}
+.btn-sm{font-size:.9rem;padding:.35rem .6rem}
+.row{display:flex;gap:.5rem;flex-wrap:wrap;margin:.4rem 0}
+.muted{color:#6b7280}
+</style></head>
+<body><header class="site-header"><div class="container nav-row"><a class="brand" href="/index.html">메인으로</a></div></header>
+<main class="container">
+<h1>아카이브</h1>
+<div id="pubs-archive"></div>
+<div id="pubs-modal" style="display:none"></div>
+</main><script defer src="/assets/script.js"></script></body></html>
