@@ -6,108 +6,160 @@
   <title>발간저널(아카이브) | Social Business Review</title>
   <link rel="stylesheet" href="/assets/styles.css">
   <style>
-    /* 최소 변경: 중앙 메인 영역만 넓게 보이도록 */
+    /* 최소 변경: 페이지 내부 전용 스타일만 추가 */
     .archive-wrap{max-width:1100px;margin:40px auto;padding:0 16px}
-    .archive-grid{display:grid;grid-template-columns:1fr;gap:24px}
-    @media (min-width: 960px){
-      .archive-grid{grid-template-columns: 1fr}
-    }
-    #pubs-archive{min-height:200px}
-    #pubs-archive .paper-list{
+    .vol-block{margin:28px 0 36px 0}
+    .vol-head{display:flex;align-items:baseline;gap:12px;margin:0 0 12px 0;border-bottom:1px solid #eee;padding-bottom:8px}
+    .vol-head h2{margin:0;font-size:1.25rem}
+    .vol-head .meta{color:#666;font-size:.95rem}
+    .paper-list{
       display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
       gap:18px;
       align-items:start;
     }
-    .paper-card{
-      border:1px solid #eee;border-radius:14px;padding:16px;background:#fff
-    }
-    .paper-card h4{margin:.2rem 0 .4rem 0;font-size:1rem}
-    .paper-card .meta{font-size:.9rem;color:#666;margin-bottom:.4rem}
-    .paper-card .actions a{display:inline-block;margin-right:10px;font-size:.9rem;text-decoration:none;border-bottom:1px dashed #aaa}
+    .paper-card{border:1px solid #eee;border-radius:14px;padding:16px;background:#fff}
+    .paper-card h4{margin:.2rem 0 .4rem 0;font-size:1.05rem;line-height:1.5}
+    .paper-card .authors{font-size:.95rem;color:#555;margin-bottom:4px}
+    .paper-card .extra{font-size:.9rem;color:#777}
+    .paper-card .actions{margin-top:8px}
+    .paper-card .actions a{display:inline-block;margin-right:12px;font-size:.92rem;text-decoration:none;border-bottom:1px dashed #aaa}
     .muted{color:#666}
+    /* 작은 화면에서 보기 좋게 */
+    @media (max-width: 480px){
+      .paper-list{grid-template-columns: 1fr}
+    }
   </style>
 </head>
 <body>
-  <main class="archive-wrap">
+  <main class="archive-wrap" id="archive-app">
     <header>
       <h1>발간저널(아카이브)</h1>
-      <p class="muted">관리자에서 등록한 최신 논문이 가운데 영역에 표시됩니다.</p>
     </header>
-
-    <section class="archive-grid">
-      <!-- 중앙 메인 렌더 타겟 -->
-      <div id="pubs-archive">
-        <div class="paper-list" aria-live="polite"></div>
-      </div>
-    </section>
+    <div id="pubs-archive"></div>
   </main>
 
   <script>
   (function(){
-    // 1) 페이지 어딘가에 이미 렌더된 항목(예: 좌측 하단의 article.paper)이 있으면 중앙으로 "이동"
-    function moveFromExisting(){
-      const centerList = document.querySelector('#pubs-archive .paper-list');
-      if (!centerList) return false;
-      const found = Array.from(document.querySelectorAll('article.paper'));
-      if (found.length){
-        // 기존 DOM에서 중앙으로 이동 (중복 표시 방지)
-        found.forEach(node => {
-          try{
-            centerList.appendChild(node);
-            // 카드 스타일이 없을 수 있으니 최소 래퍼 적용
-            if (!node.classList.contains('paper-card')) node.classList.add('paper-card');
-          }catch(_){}
-        });
-        return true;
-      }
-      return false;
+    const root = document.getElementById('pubs-archive');
+
+    function text(v){ return (v==null?'':String(v)).trim(); }
+    function tryNum(v){
+      const n = Number((v||'').toString().replace(/[^0-9.]/g,''));
+      return Number.isFinite(n) ? n : null;
     }
-
-    // 2) 기존 요소가 없다면, 데이터 파일에서 직접 렌더 (기존 구조는 손대지 않음)
-    async function renderFromJSON(){
-      const centerList = document.querySelector('#pubs-archive .paper-list');
-      if (!centerList) return;
-      try{
-        const res = await fetch('/assets/data/pubs.json', { cache:'no-store' });
-        if (!res.ok) return;
-        const data = await res.json();
-        const entries = (data && (data.entries || data)) || [];
-        if (!Array.isArray(entries) || !entries.length) return;
-
-        entries.forEach(it => {
-          const title = it.title || '제목 미정';
-          const authors = Array.isArray(it.authors)
-            ? it.authors.map(a => (typeof a === 'string' ? a : (a.name||''))).filter(Boolean).join(', ')
-            : (it.authors || '');
-          const volno = [it.volume, it.issue].filter(Boolean).join(' / ');
-          const year = it.year || '';
-          const pdf = it.pdf || it.file || (it.attachments && it.attachments[0] && it.attachments[0].url) || '';
-          const li = document.createElement('article');
-          li.className = 'paper-card';
-          li.innerHTML = `
+    function authorsToText(auth){
+      if (!auth) return '';
+      if (Array.isArray(auth)){
+        return auth.map(a => (typeof a==='string'?a:(a.name||''))).filter(Boolean).join(', ');
+      }
+      return String(auth||'');
+    }
+    function buildGroupKey(x){
+      const v = text(x.volume||x.vol);
+      const i = text(x.issue||x.no||x.number);
+      const y = text(x.year||x.date||'');
+      return [v,i,y].join('|');
+    }
+    function groupTitle(v,i,y){
+      const parts = [];
+      if (v) parts.push(`Vol.${v}`);
+      if (i) parts.push(`No.${i}`);
+      const head = parts.length ? parts.join(' ') : '기타';
+      return y ? `${head} (${y})` : head;
+    }
+    function sortGroupsDesc(a,b){
+      // Sort by year desc, volume desc, issue desc (numbers when possible)
+      const [va,ia,ya] = a.key.split('|');
+      const [vb,ib,yb] = b.key.split('|');
+      const nyA = tryNum(ya) ?? -1, nyB = tryNum(yb) ?? -1;
+      if (nyA !== nyB) return nyB - nyA;
+      const nvA = tryNum(va) ?? -1, nvB = tryNum(vb) ?? -1;
+      if (nvA !== nvB) return nvB - nvA;
+      const niA = tryNum(ia) ?? -1, niB = tryNum(ib) ?? -1;
+      return niB - niA;
+    }
+    function render(entries){
+      if (!root) return;
+      root.innerHTML = '';
+      // 1) 그룹화
+      const map = new Map();
+      entries.forEach(it => {
+        const key = buildGroupKey(it);
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(it);
+      });
+      // 2) 정렬 & 그리기
+      const groups = Array.from(map.entries()).map(([key, items])=>({key, items}));
+      groups.sort(sortGroupsDesc);
+      groups.forEach(g => {
+        const [v,i,y] = g.key.split('|');
+        const block = document.createElement('section');
+        block.className = 'vol-block';
+        block.innerHTML = `
+          <div class="vol-head">
+            <h2>${groupTitle(v,i,y)}</h2>
+            <div class="meta">${g.items.length}편</div>
+          </div>
+          <div class="paper-list"></div>
+        `;
+        const list = block.querySelector('.paper-list');
+        g.items.forEach(it => {
+          const title = text(it.title || it.paper_title || '제목 미정');
+          const authors = authorsToText(it.authors);
+          const doi = text(it.doi);
+          const year = text(it.year);
+          const pdf = text(it.pdf || it.file || (it.attachments && it.attachments[0] && it.attachments[0].url));
+          const card = document.createElement('article');
+          card.className = 'paper-card';
+          card.innerHTML = `
             <h4>${title}</h4>
-            <div class="meta">${[authors, volno, year].filter(Boolean).join(' · ')}</div>
+            ${authors ? `<div class="authors">${authors}</div>` : ''}
+            <div class="extra">
+              ${doi ? `DOI: <span>${doi}</span>` : ''}
+            </div>
             <div class="actions">
-              ${pdf ? `<a href="${pdf}" target="_blank" rel="noopener">PDF 열기</a>` : ''}
+              ${pdf ? `<a href="${pdf}" target="_blank" rel="noopener">PDF</a>` : ''}
             </div>
           `;
-          centerList.appendChild(li);
+          list.appendChild(card);
         });
-      }catch(e){ /* silent */ }
+        root.appendChild(block);
+      });
     }
 
-    function init(){
-      if (!moveFromExisting()){
-        // 좌측 하단 렌더가 지연될 수 있으므로 잠깐 관찰하다가 없으면 JSON으로 채움
-        const obs = new MutationObserver(() => {
-          if (moveFromExisting()){
-            obs.disconnect();
+    async function init(){
+      // 0) 기존에 하드코딩된 데모 텍스트 제거
+      // (이 페이지 파일에서 이미 제거했지만, CDN 캐시 등에 대비해 남아 있으면 지움)
+      Array.from(document.querySelectorAll('h2,h3,p')).forEach(n=>{
+        const t = (n.textContent||'').replace(/\s+/g,' ').trim();
+        if (/발간논문.*Archive/i.test(t) || /Vol\.?\s*1.*No\.?\s*1/i.test(t)){
+          n.remove();
+        }
+      });
+
+      // 1) 데이터 로드 (최우선: pubs.json)
+      try{
+        const res = await fetch('/assets/data/pubs.json', { cache:'no-store' });
+        if (res.ok){
+          const data = await res.json();
+          const entries = (data && (data.entries || data)) || [];
+          if (Array.isArray(entries) && entries.length){
+            render(entries);
+            return;
           }
-        });
-        obs.observe(document.documentElement, { childList:true, subtree:true });
-        // 1.2초 내에 못 찾으면 JSON으로 직접 렌더
-        setTimeout(() => { renderFromJSON(); obs.disconnect(); }, 1200);
+        }
+      }catch(e){/*silent*/}
+
+      // 2) 폴백: 페이지 내 기존 DOM 항목 존재 시, 가능한 정보만 수집해서 간이 그룹 렌더
+      const nodes = Array.from(document.querySelectorAll('article.paper'));
+      if (nodes.length){
+        const entries = nodes.map(n => ({
+          title: (n.querySelector('h4, h3, .title')||{}).textContent || '',
+          authors: (n.querySelector('.authors, .byline')||{}).textContent || '',
+          pdf: (n.querySelector('a[href$=".pdf"]')||{}).getAttribute ? (n.querySelector('a[href$=".pdf"]').getAttribute('href') || '') : ''
+        }));
+        render(entries);
       }
     }
 
