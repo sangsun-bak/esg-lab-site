@@ -272,212 +272,241 @@ function renderLatest3(entries) {
 }
 
 
-// ===== Helpers =====
-function ensureMarked(cb){
-  if (window.marked) return cb();
-  var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'; 
-  s.onload=cb; document.head.appendChild(s);
+// === Utility: load marked for Markdown -> HTML ===
+(function ensureMarked(){
+  if (!window.marked) {
+    var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'; s.defer=true;
+    document.head.appendChild(s);
+  }
+})();
+
+function normalizeAssetUrl(url){
+  if(!url) return '';
+  if(/^https?:\/\//i.test(url)) return url;
+  if(url.startsWith('/')) return url;
+  if(url.startsWith('assets/')) return '/' + url;
+  return url;
 }
-function normalizeAssetUrl(u){
-  if (!u) return '';
-  if (/^https?:\/\//i.test(u)) return u;
-  if (u.startsWith('/')) return u;
-  if (u.startsWith('assets/')) return '/'+u;
-  return '/assets/'+u.replace(/^\/+/,''); // fallback
+
+async function fetchJSON(path){
+  try {
+    const res = await fetch(path, {cache:'no-store'});
+    const data = await res.json();
+    return Array.isArray(data) ? data : (data.entries || []);
+  } catch(e){ console.error('fetchJSON failed', path, e); return []; }
 }
 
 // ===== News =====
-async function fetchNewsEntries(){
-  try{
-    const res=await fetch('/assets/data/news.json',{cache:'no-store'});
-    const data=await res.json();
-    const arr=Array.isArray(data)?data:(Array.isArray(data.entries)?data.entries:[]);
-    const norm=arr.map(x=>({
-      id:x.id||'',
-      date:(x.date||'').slice(0,10),
-      title:x.title||'',
-      content:x.content||'',
-      attachments:Array.isArray(x.attachments)?x.attachments:[]
-    }));
-    norm.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-    return norm;
-  }catch(e){console.error('news load fail',e);return []}
-}
-
-function renderLatest3News(entries){
-  // Try to inject into an existing notice list if present
-  const targets = [
-    document.querySelector('#latest-news .news-list'),
-    document.querySelector('.notice .news-list'),
-    document.querySelector('.notice ul'),
-    document.querySelector('#news-brief')
-  ];
-  const list = targets.find(Boolean);
-  if (!list) return;
-  list.innerHTML='';
-  entries.slice(0,3).forEach(item=>{
-    const li=document.createElement('li');
-    const a=document.createElement('a');
-    a.href='/news.html#'+encodeURIComponent(item.id);
-    a.textContent=`[${item.date}] ${item.title}`;
-    li.appendChild(a);
-    list.appendChild(li);
-  });
-}
-
-function renderNewsBoard(entries){
-  const board=document.querySelector('#news-board'); if (!board) return;
-  board.innerHTML='';
-  entries.forEach(item=>{
-    const card=document.createElement('article'); card.className='news-item';
-    const h3=document.createElement('h3'); const a=document.createElement('a');
-    a.href='javascript:void(0)'; a.textContent=item.title; a.addEventListener('click',()=>openNewsModal(item));
-    h3.appendChild(a);
-    const meta=document.createElement('div'); meta.className='muted'; meta.textContent=item.date;
-    const excerpt=document.createElement('div'); excerpt.className='excerpt';
-    const tmp=document.createElement('div'); tmp.innerHTML=item.content||'';
-    const text=(tmp.textContent||'').trim().slice(0,160); excerpt.textContent=text;
-    card.appendChild(h3); card.appendChild(meta); card.appendChild(excerpt);
-    board.appendChild(card);
-  });
-  if (location.hash){
-    const id=decodeURIComponent(location.hash.substring(1));
-    const target=entries.find(e=>e.id===id); if (target) openNewsModal(target);
+async function loadNews(){
+  const entries = await fetchJSON('/assets/data/news.json');
+  // sort by date desc
+  entries.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  // Latest 3 on index
+  const brief = document.querySelector('#latest-news .news-list, #news-brief, .news-brief');
+  if(brief){
+    brief.innerHTML='';
+    entries.slice(0,3).forEach(it=>{
+      const li=document.createElement('li');
+      const a=document.createElement('a');
+      a.href = '/news.html#'+encodeURIComponent(it.id||'');
+      a.textContent = `[${(it.date||'').slice(0,10)}] ${it.title||''}`;
+      li.appendChild(a); brief.appendChild(li);
+    });
+  }
+  // Board
+  const board = document.querySelector('#news-board');
+  if(board){
+    board.innerHTML='';
+    entries.forEach(it=>{
+      const card=document.createElement('article'); card.className='news-item';
+      const h3=document.createElement('h3'); const a=document.createElement('a'); a.href='javascript:void(0)'; a.textContent=it.title||'';
+      a.addEventListener('click',()=>openNewsModal(it)); h3.appendChild(a);
+      const meta=document.createElement('div'); meta.className='muted'; meta.textContent=(it.date||'').slice(0,10);
+      const ex=document.createElement('div'); ex.className='excerpt';
+      const tmp=document.createElement('div'); tmp.innerHTML = it.content || '';
+      const plain=(tmp.textContent||'').trim().replace(/\s+/g,' ').slice(0,160);
+      ex.textContent=plain;
+      card.appendChild(h3); card.appendChild(meta); card.appendChild(ex);
+      board.appendChild(card);
+    });
+    if(location.hash){
+      const id=decodeURIComponent(location.hash.substring(1));
+      const t=entries.find(e=>e.id===id); if(t) openNewsModal(t);
+    }
   }
 }
 
-function openNewsModal(item){
-  let modal=document.getElementById('news-modal'); if (!modal){ modal=document.createElement('div'); modal.id='news-modal'; document.body.appendChild(modal); }
-  modal.className='news-modal'; modal.innerHTML='';
+function openNewsModal(it){
+  let modal=document.getElementById('news-modal');
+  if(!modal){ modal=document.createElement('div'); modal.id='news-modal'; document.body.appendChild(modal); }
+  modal.className='news-modal';
+  modal.innerHTML='';
   const overlay=document.createElement('div'); overlay.className='modal-overlay';
   const box=document.createElement('div'); box.className='modal-box';
-  const title=document.createElement('h3'); title.textContent=item.title;
-  const meta=document.createElement('div'); meta.className='muted'; meta.textContent=item.date;
+  const title=document.createElement('h3'); title.textContent=it.title||'';
+  const meta=document.createElement('div'); meta.className='muted'; meta.textContent=(it.date||'').slice(0,10);
   const body=document.createElement('div'); body.className='modal-body';
-  ensureMarked(()=>{ try{ body.innerHTML = item.content && item.content.trim().startsWith('<') ? item.content : marked.parse(item.content||''); }catch(e){ body.textContent=item.content||''; } });
-  const files=document.createElement('div');
-  if (item.attachments && item.attachments.length){
-    const ul=document.createElement('ul');
-    item.attachments.forEach(att=>{
-      const li=document.createElement('li'); const a=document.createElement('a');
-      a.href=normalizeAssetUrl(att.file||att.url||'#'); a.target='_blank'; a.textContent=att.name||att.file||'첨부파일';
-      li.appendChild(a); ul.appendChild(li);
-    }); files.appendChild(ul);
+  // If looks like markdown (no tags), render via marked when available
+  if(it.content && it.content.indexOf('<')===-1 && window.marked){
+    body.innerHTML = window.marked.parse(it.content);
+  } else {
+    body.innerHTML = it.content || '';
   }
-  const close=document.createElement('button'); close.className='btn btn-sm'; close.textContent='닫기'; close.addEventListener('click',()=>{modal.style.display='none';});
+  const files=document.createElement('div');
+  (it.attachments||[]).forEach(att=>{
+    const a=document.createElement('a'); a.href=normalizeAssetUrl(att.file||att.url||'#'); a.target='_blank';
+    a.textContent=att.name || att.file || '첨부파일';
+    const p=document.createElement('p'); p.appendChild(a); files.appendChild(p);
+  });
+  const close=document.createElement('button'); close.className='btn btn-sm'; close.textContent='닫기';
+  close.addEventListener('click',()=>{ modal.style.display='none'; });
   box.appendChild(title); box.appendChild(meta); box.appendChild(body); box.appendChild(files); box.appendChild(close);
   modal.appendChild(overlay); modal.appendChild(box); modal.style.display='block';
 }
 
-// ===== Publications (Vol/Issue → Papers) =====
-async function fetchPubsEntries(){
-  try{
-    const res=await fetch('/assets/data/pubs.json',{cache:'no-store'});
-    const data=await res.json();
-    const arr=Array.isArray(data)?data:(Array.isArray(data.entries)?data.entries:[]);
-    return arr.map(x=>({
-      id:x.id||'',
-      date:(x.date||'').slice(0,10),
-      title:x.title||'',
-      authors:Array.isArray(x.authors)?x.authors:[],
-      abstract:x.abstract||'',
-      volume:parseInt(x.volume||0,10)||0,
-      issue:parseInt(x.issue||0,10)||0,
-      pages:x.pages||'',
-      doi:x.doi||'',
-      pdf:normalizeAssetUrl(x.pdf||'')
-    }));
-  }catch(e){console.error('pubs load fail',e);return []}
+// ===== Publications (Pubs) =====
+async function loadPubs(){
+  const entries = await fetchJSON('/assets/data/pubs.json');
+  // normalization
+  const items = entries.map(e=> ({
+    id: e.id||'',
+    date: (e.date||'').slice(0,10),
+    title: e.title||'',
+    authors: Array.isArray(e.authors)? e.authors : (typeof e.authors==='string' ? e.authors.split(',').map(s=>({name:s.trim()})) : []),
+    abstract: e.abstract||'',
+    pdf: normalizeAssetUrl(e.pdf||''),
+    volume: Number(e.volume||0),
+    issue: Number(e.issue||0),
+    pages: e.pages||'',
+    doi: e.doi||''
+  }));
+  // Containers
+  const board = document.querySelector('#pubs-board');
+  const archive = document.querySelector('#pubs-archive');
+  if (board) renderPubsBoard(items);
+  if (archive) renderPubsArchive(items);
+  // Deep link
+  if (location.hash){
+    const params = Object.fromEntries(new URLSearchParams(location.hash.replace(/^#/, '').replace(/&/g,'&')).entries());
+    const v = Number(params.vol||params.volume||0);
+    const i = Number(params.issue||0);
+    const pid = params.paper||params.id||'';
+    if (archive) renderPubsArchive(items, v, i, pid);
+  }
 }
 
-function groupByVolIssue(entries){
-  const map={};
-  entries.forEach(e=>{
-    const v=e.volume||0, i=e.issue||0;
-    if(!map[v]) map[v]={};
-    if(!map[v][i]) map[v][i]=[];
-    map[v][i].push(e);
+function renderPubsBoard(items){
+  const el = document.querySelector('#pubs-board'); if(!el) return;
+  el.innerHTML = '';
+  // Group by volume/issue desc
+  items.sort((a,b)=> (b.volume - a.volume) || (b.issue - a.issue) || (a.pages||'').localeCompare(b.pages||''));
+  items.forEach(it=>{
+    const card=document.createElement('article'); card.className='news-item';
+    const h3=document.createElement('h3'); const a=document.createElement('a'); a.href='javascript:void(0)'; a.textContent=it.title;
+    a.addEventListener('click',()=>openPubModal(it)); h3.appendChild(a);
+    const meta=document.createElement('div'); meta.className='muted'; 
+    meta.textContent = `Vol.${it.volume} No.${it.issue}` + (it.pages? ` · pp.${it.pages}`:'') + (it.date? ` · ${it.date}`:'');
+    const auth=document.createElement('div'); auth.className='muted';
+    auth.textContent = (it.authors||[]).map(a=>a.name||'').filter(Boolean).join(', ');
+    const btns=document.createElement('div');
+    if(it.pdf){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.pdf; b.target='_blank'; b.textContent='PDF'; btns.appendChild(b); }
+    if(it.doi){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.doi; b.target='_blank'; b.textContent='DOI'; btns.appendChild(b); }
+    card.appendChild(h3); card.appendChild(auth); card.appendChild(meta); card.appendChild(btns);
+    el.appendChild(card);
   });
-  return map;
 }
 
-function renderPubsBoard(entries){
-  const root=document.querySelector('#pubs-board'); if(!root) return;
-  const map=groupByVolIssue(entries);
-  const vols=Object.keys(map).map(Number).sort((a,b)=>b-a);
-  const params=new URLSearchParams(location.hash.replace('#',''));
-  let selV=parseInt(params.get('vol')||0,10);
-  let selI=parseInt(params.get('issue')||0,10);
-  root.innerHTML='';
-  // Vol buttons
-  const vWrap=document.createElement('div'); vWrap.className='vol-wrap';
+function renderPubsArchive(items, volFilter=0, issueFilter=0, paperId=''){
+  const el = document.querySelector('#pubs-archive'); if(!el) return;
+  el.innerHTML = '';
+  // Build volumes map
+  const groups = {};
+  items.forEach(it=>{
+    const v=it.volume||0, i=it.issue||0;
+    if(!groups[v]) groups[v] = {};
+    if(!groups[v][i]) groups[v][i] = [];
+    groups[v][i].push(it);
+  });
+  const vols = Object.keys(groups).map(n=>Number(n)).sort((a,b)=>b-a);
+  // Controls
+  const nav=document.createElement('div'); nav.className='pubs-nav';
   vols.forEach(v=>{
-    const btn=document.createElement('button'); btn.className='btn btn-sm'; btn.textContent='Vol.'+v;
-    btn.addEventListener('click',()=>{ location.hash=`vol=${v}`; renderPubsBoard(entries); });
-    if (v===selV) btn.style.fontWeight='700';
-    vWrap.appendChild(btn);
+    const volBtn=document.createElement('button'); volBtn.className='btn btn-sm'; volBtn.textContent='Vol. '+v;
+    volBtn.addEventListener('click',()=>renderPubsArchive(items, v, 0, ''));
+    nav.appendChild(volBtn);
+    if(volFilter===v){
+      const issues = Object.keys(groups[v]).map(n=>Number(n)).sort((a,b)=>b-a);
+      const wrap=document.createElement('span'); wrap.style.marginLeft='6px';
+      issues.forEach(i=>{
+        const ib=document.createElement('button'); ib.className='btn btn-sm'; ib.textContent='No. '+i;
+        ib.addEventListener('click',()=>renderPubsArchive(items, v, i, ''));
+        wrap.appendChild(ib);
+      });
+      nav.appendChild(wrap);
+    }
   });
-  root.appendChild(vWrap);
-  if (!selV && vols.length){ selV=vols[0]; }
-  // Issue buttons
-  const issues=selV?Object.keys(map[selV]).map(Number).sort((a,b)=>b-a):[];
-  const iWrap=document.createElement('div'); iWrap.className='issue-wrap';
-  issues.forEach(i=>{
-    const btn=document.createElement('button'); btn.className='btn btn-sm'; btn.textContent='No.'+i;
-    btn.addEventListener('click',()=>{ location.hash=`vol=${selV}&issue=${i}`; renderPubsBoard(entries); });
-    if (i===selI) btn.style.fontWeight='700';
-    iWrap.appendChild(btn);
+  el.appendChild(nav);
+  // List
+  let list=[];
+  vols.forEach(v=>{
+    Object.keys(groups[v]).forEach(i=>{
+      const issueNum=Number(i);
+      groups[v][i].sort((a,b)=> (a.pages||'').localeCompare(b.pages||''));
+    });
   });
-  root.appendChild(iWrap);
-  if (!selI && issues.length){ selI=issues[0]; }
-  // Papers list
-  const list=document.createElement('div'); list.className='paper-list';
-  const papers=(map[selV]&&map[selV][selI])?map[selV][selI].slice():[];
-  // sort by pages (if like "1–20")
-  papers.sort((a,b)=>{
-    const getFirst=(p)=>{const m=(p||'').match(/^\s*(\d+)/); return m?parseInt(m[1],10):0;}
-    return getFirst(a.pages)-getFirst(b.pages);
+  if(volFilter && issueFilter){
+    list = groups[volFilter]?.[issueFilter] || [];
+  }else if(volFilter){
+    // flatten all issues in this volume
+    list = Object.values(groups[volFilter]||{}).flat();
+  }else{
+    list = items.slice();
+  }
+  const wrap=document.createElement('div'); wrap.className='pubs-list';
+  list.forEach(it=>{
+    const row=document.createElement('article'); row.className='news-item';
+    const h3=document.createElement('h3'); const a=document.createElement('a'); a.href='javascript:void(0)'; a.textContent=it.title;
+    a.addEventListener('click',()=>openPubModal(it));
+    h3.appendChild(a);
+    const meta=document.createElement('div'); meta.className='muted'; meta.textContent=`Vol.${it.volume} No.${it.issue}` + (it.pages? ` · pp.${it.pages}`:'') + (it.date? ` · ${it.date}`:'');
+    const auth=document.createElement('div'); auth.className='muted'; auth.textContent=(it.authors||[]).map(a=>a.name||'').filter(Boolean).join(', ');
+    const btns=document.createElement('div');
+    if(it.pdf){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.pdf; b.target='_blank'; b.textContent='PDF'; btns.appendChild(b); }
+    if(it.doi){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.doi; b.target='_blank'; b.textContent='DOI'; btns.appendChild(b); }
+    row.appendChild(h3); row.appendChild(auth); row.appendChild(meta); row.appendChild(btns);
+    wrap.appendChild(row);
   });
-  papers.forEach(p=>{
-    const item=document.createElement('article'); item.className='paper';
-    const h3=document.createElement('h3'); h3.textContent=p.title;
-    const meta=document.createElement('div'); meta.className='muted';
-    const authors = p.authors.map(a=> (typeof a==='string'?a:(a.name||''))).filter(Boolean).join(' · ');
-    meta.textContent=`${authors}${p.pages?(' · pp.'+p.pages):''}`;
-    const row=document.createElement('div'); row.className='row';
-    const btnPdf=document.createElement('a'); btnPdf.className='btn btn-sm'; btnPdf.href=p.pdf||'#'; btnPdf.target='_blank'; btnPdf.textContent='PDF';
-    const btnAbs=document.createElement('button'); btnAbs.className='btn btn-sm'; btnAbs.textContent='초록 보기'; btnAbs.addEventListener('click',()=>openPubModal(p));
-    row.appendChild(btnPdf); if (p.doi){ const a=document.createElement('a'); a.href=p.doi; a.target='_blank'; a.className='btn btn-sm'; a.textContent='DOI'; row.appendChild(a); } row.appendChild(btnAbs);
-    item.appendChild(h3); item.appendChild(meta); item.appendChild(row);
-    list.appendChild(item);
-  });
-  root.appendChild(list);
-  // Deep link: #vol=..&issue=..&paper=id
-  const params2=new URLSearchParams(location.hash.replace('#','')); const pid=params2.get('paper');
-  if (pid){ const target = entries.find(x=>x.id===pid); if (target) openPubModal(target); }
+  el.appendChild(wrap);
+  // Deep link open
+  if(paperId){
+    const t=list.find(x=>x.id===paperId); if(t) openPubModal(t);
+  }
 }
 
-function openPubModal(p){
-  let modal=document.getElementById('pubs-modal'); if(!modal){ modal=document.createElement('div'); modal.id='pubs-modal'; document.body.appendChild(modal); }
+function openPubModal(it){
+  let modal=document.getElementById('pubs-modal');
+  if(!modal){ modal=document.createElement('div'); modal.id='pubs-modal'; document.body.appendChild(modal); }
   modal.className='news-modal'; modal.innerHTML='';
   const overlay=document.createElement('div'); overlay.className='modal-overlay';
   const box=document.createElement('div'); box.className='modal-box';
-  const title=document.createElement('h3'); title.textContent=p.title;
-  const meta=document.createElement('div'); meta.className='muted';
-  const authors = p.authors.map(a=> (typeof a==='string'?a:(a.name||''))).filter(Boolean).join(' · ');
-  meta.textContent=`Vol.${p.volume} · No.${p.issue}${p.pages?(' · pp.'+p.pages):''}${authors?' · '+authors:''}`;
+  const title=document.createElement('h3'); title.textContent=it.title||'';
+  const meta=document.createElement('div'); meta.className='muted'; meta.textContent=`Vol.${it.volume} No.${it.issue}` + (it.pages? ` · pp.${it.pages}`:'') + (it.date? ` · ${it.date}`:'');
+  const auth=document.createElement('div'); auth.className='muted'; auth.textContent=(it.authors||[]).map(a=>a.name||'').filter(Boolean).join(', ');
   const body=document.createElement('div'); body.className='modal-body';
-  ensureMarked(()=>{ try{ body.innerHTML = p.abstract && p.abstract.trim().startsWith('<') ? p.abstract : marked.parse(p.abstract||''); }catch(e){ body.textContent=p.abstract||''; } });
+  if(it.abstract && it.abstract.indexOf('<')===-1 && window.marked){
+    body.innerHTML = window.marked.parse(it.abstract);
+  } else {
+    body.innerHTML = it.abstract || '';
+  }
   const actions=document.createElement('div'); 
-  if (p.pdf){ const a=document.createElement('a'); a.className='btn btn-sm'; a.href=p.pdf; a.target='_blank'; a.textContent='PDF 다운로드'; actions.appendChild(a); }
-  if (p.doi){ const a2=document.createElement('a'); a2.className='btn btn-sm'; a2.href=p.doi; a2.target='_blank'; a2.textContent='DOI'; actions.appendChild(a2); }
+  if(it.pdf){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.pdf; b.target='_blank'; b.textContent='PDF'; actions.appendChild(b); }
+  if(it.doi){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.doi; b.target='_blank'; b.textContent='DOI'; actions.appendChild(b); }
   const close=document.createElement('button'); close.className='btn btn-sm'; close.textContent='닫기'; close.addEventListener('click',()=>{ modal.style.display='none'; });
-  box.appendChild(title); box.appendChild(meta); box.appendChild(body); box.appendChild(actions); box.appendChild(close);
+  box.appendChild(title); box.appendChild(auth); box.appendChild(meta); box.appendChild(body); box.appendChild(actions); box.appendChild(close);
   modal.appendChild(overlay); modal.appendChild(box); modal.style.display='block';
 }
 
-// ===== Bootstrap on DOMContentLoaded =====
-document.addEventListener('DOMContentLoaded', async () => {
-  const news = await fetchNewsEntries(); renderLatest3News(news); renderNewsBoard(news);
-  const pubs = await fetchPubsEntries(); renderPubsBoard(pubs);
+document.addEventListener('DOMContentLoaded', function(){
+  loadNews();
+  loadPubs();
 });
