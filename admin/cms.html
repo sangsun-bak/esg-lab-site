@@ -1,31 +1,63 @@
-<!doctype html><html lang="ko"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CMS | ESG 경영연구소</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--green:#0B7A4B;--ink:#111827;--muted:#6b7280}
-*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,'맑은 고딕',sans-serif}
-.toolbar{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#f7faf9;border-bottom:1px solid #e5e7eb;z-index:9999}
-.toolbar a,.toolbar button{border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:8px 12px;text-decoration:none;color:#111827}
-.toolbar .primary{background:var(--green);color:#fff;border-color:transparent}
-.cms-root{margin-top:52px}
-.nc-appHeader,.nc-appBar{display:none!important}
-</style></head><body>
-<div class="toolbar">
-  <a href="/admin/" class="primary">← 대시보드로</a>
-  <button onclick="openCollection('news')">소식/이벤트</button>
-  <button onclick="openCollection('pubs')">발간저널</button>
-  <span style="color:var(--muted);font-size:14px;margin-left:6px">로그인 후 두 게시판을 오가며 관리하세요</span>
-</div>
-<div class="cms-root"></div>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-<script>
-(function ensureInviteToken(){
-  const u=new URL(location.href);const t=u.searchParams.get('invite_token');
-  if(t && !location.hash.includes('invite_token')){location.replace('/admin/cms.html#/invite_token='+t);}
-})();
-function openCollection(name){const url='/admin/cms.html#/collections/'+encodeURIComponent(name); if(location.href!==url) location.href=url; else location.reload();}
-</script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CMS | ESG 경영연구소</title>
+  <style>
+    :root{--green:#0B7A4B;--ink:#111827;--muted:#6b7280}
+    *{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,'맑은 고딕',sans-serif}
+    .toolbar{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#f7faf9;border-bottom:1px solid #e5e7eb;z-index:9999}
+    .toolbar a,.toolbar button{border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:8px 12px;text-decoration:none;color:#111827;cursor:pointer}
+    .toolbar .primary{background:var(--green);color:#fff;border-color:transparent}
+    .cms-root{margin-top:52px}
+    /* Hide Decap's default header to reduce clutter */
+    .nc-appHeader, .nc-appBar { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <a href="/admin/" class="primary">← 대시보드로</a>
+    <button data-col="news">소식/이벤트</button>
+    <button data-col="pubs">발간저널</button>
+    <span style="color:var(--muted);font-size:14px;margin-left:6px">로그인 후 두 게시판을 오가며 관리하세요</span>
+  </div>
+
+  <div class="cms-root"></div>
+
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    // Guard: ensure invite_token handled only once
+    (function(){
+      try{
+        const handled = sessionStorage.getItem('invite_token_handled');
+        const u = new URL(location.href);
+        const qToken = u.searchParams.get('invite_token');
+        const hashHasToken = location.hash.includes('invite_token=');
+        if (!handled && qToken && !hashHasToken) {
+          sessionStorage.setItem('invite_token_handled','1');
+          location.replace('/admin/cms.html#/invite_token=' + qToken);
+        }
+      }catch(e){}
+    })();
+
+    // Switch collections without reload/flicker
+    (function(){
+      function goto(col){
+        const target = '/admin/cms.html#/collections/' + encodeURIComponent(col);
+        if (location.href !== location.origin + target && location.hash !== '#/collections/' + col) {
+          location.hash = '#/collections/' + col;
+        }
+      }
+      document.querySelectorAll('[data-col]').forEach(btn=>{
+        btn.addEventListener('click', ()=> goto(btn.getAttribute('data-col')));
+      });
+      // Default: if no specific route, open news
+      if (!location.hash || location.hash === '#/' || location.hash === '#') {
+        location.hash = '#/collections/news';
+      }
+    })();
+  </script>
+</body>
+</html>
