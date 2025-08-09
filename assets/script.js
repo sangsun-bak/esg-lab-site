@@ -11,14 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-
-/* === News rendering (auto from assets/data/news.json) === */
+/* === News rendering (clean) === */
 async function loadNewsData() {
   try {
-    const res = await fetch('/assets/data/news.json', {cache:'no-store'});
+    const res = await fetch('/assets/data/news.json?v=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to load news.json');
     const data = await res.json();
-    data.sort((a,b)=> (a.date<b.date?1:-1)); // newest first
+    data.sort((a,b)=> (a.date < b.date ? 1 : -1));
     return data;
   } catch (e) {
     console.error(e);
@@ -31,14 +30,18 @@ async function renderNewsBrief(ulId, limit=4) {
   if (!listEl) return;
   const items = await loadNewsData();
   listEl.innerHTML = '';
-  items.slice(0, limit).forEach(it => {
+  const slice = items.slice(0, limit);
+  if (slice.length === 0) {
+    listEl.innerHTML = '<li>목록을 불러오지 못했습니다.</li>';
+    return;
+  }
+  slice.forEach(it => {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.href = it.href;
     a.textContent = `(${it.date}) ${it.title}`;
     li.appendChild(a);
-    listEl.appendChild(a);
-    a.prepend(li);
+    listEl.appendChild(li);
   });
 }
 
@@ -47,11 +50,18 @@ async function renderNewsList(containerId) {
   if (!wrap) return;
   const items = await loadNewsData();
   wrap.innerHTML = '';
+  if (items.length === 0) {
+    wrap.innerHTML = '<p>목록을 불러오지 못했습니다.</p>';
+    return;
+  }
   const ul = document.createElement('ul');
   ul.className = 'news-list';
   items.forEach(it => {
     const li = document.createElement('li');
-    li.innerHTML = `<a href="${it.href}">(${it.date}) ${it.title}</a>`;
+    const a = document.createElement('a');
+    a.href = it.href;
+    a.textContent = `(${it.date}) ${it.title}`;
+    li.appendChild(a);
     ul.appendChild(li);
   });
   wrap.appendChild(ul);
