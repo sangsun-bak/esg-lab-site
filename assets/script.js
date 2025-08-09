@@ -96,19 +96,6 @@ async function fetchNewsEntries() {
   }
 }
 
-function renderLatest3(entries) {
-  const list = document.querySelector('#latest-news .news-list');
-  if (!list) return;
-  list.innerHTML = '';
-  entries.slice(0,3).forEach(item => {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = '/news.html#' + encodeURIComponent(item.id);
-    a.textContent = `[${item.date}] ${item.title}`;
-    li.appendChild(a);
-    list.appendChild(li);
-  });
-}
 
 function renderBoard(entries) {
   const board = document.querySelector('#news-board');
@@ -200,3 +187,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderLatest3(news);
   renderBoard(news);
 });
+
+function renderLatest3(entries) {
+  // Fill existing '공지' list on homepage if present
+  const list = document.querySelector('#news-brief');
+  if (!list) return;
+  list.innerHTML = '';
+  entries.slice(0,3).forEach(item => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '/news.html#' + encodeURIComponent(item.id);
+    a.textContent = `${item.title} (${item.date})`;
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+}
