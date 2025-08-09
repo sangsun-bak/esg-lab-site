@@ -27,140 +27,40 @@ async function loadNewsData() {
   try {
     const res = await fetch('/assets/data/news.json?v=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to load news.json');
-    const data = await res.json();
-    data.sort((a,b)=> (a.date < b.date ? 1 : -1));
-    return data;
+    const raw = await res.json();
+    // normalize: [{...}] or {entries:[...]}
+    const data = Array.isArray(raw) ? raw : (Array.isArray(raw.entries) ? raw.entries : []);
+    // ensure fields we use exist
+    const items = data.map(it => ({
+      ...it,
+      href: it.href || '/news.html'
+    }));
+    items.sort((a,b)=> (a.date < b.date ? 1 : -1)); // newest first
+    return items;
   } catch (e) {
-    console.error(e);
+    console.error('[home-news] load error', e);
     return [];
   }
 }
 
-async function renderNewsBrief(ulId, limit=4) {
+async function renderNewsBrief(ulId, limit=3) {
   const listEl = document.getElementById(ulId);
   if (!listEl) return;
   const items = await loadNewsData();
   listEl.innerHTML = '';
   const slice = items.slice(0, limit);
   if (slice.length === 0) {
-    listEl.innerHTML = '<li>목록을 불러오지 못했습니다.</li>';
+    // silent: no error line; leave empty to avoid "불러올 수 없습니다"
     return;
   }
   slice.forEach(it => {
     const li = document.createElement('li');
     const a = document.createElement('a');
-    a.href = it.href;
-    a.textContent = `(${it.date}) ${it.title}`;
+    a.href = it.href || '/news.html';
+    a.textContent = `(${it.date || ''}) ${it.title || '제목 없음'}`.trim();
     li.appendChild(a);
     listEl.appendChild(li);
   });
-}
-
-async function renderNewsList(containerId) {
-  const wrap = document.getElementById(containerId);
-  if (!wrap) return;
-  const items = await loadNewsData();
-  wrap.innerHTML = '';
-  if (items.length === 0) {
-    wrap.innerHTML = '<p>목록을 불러오지 못했습니다.</p>';
-    return;
-  }
-  const ul = document.createElement('ul');
-  ul.className = 'news-list';
-  items.forEach(it => {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = it.href;
-    a.textContent = `(${it.date}) ${it.title}`;
-    li.appendChild(a);
-    ul.appendChild(li);
-  });
-  wrap.appendChild(ul);
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  if (document.getElementById('news-brief')) renderNewsBrief('news-brief', 4);
-  if (document.getElementById('news-list-wrap')) renderNewsList('news-list-wrap');
-});
-
-
-
-
-// /* Markdown support start */
-let _markedReady = false;
-async function ensureMarked() {
-  if (_markedReady) return true;
-  try {
-    if (!window.marked) {
-      // dynamically load marked from CDN
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-        s.onload = resolve; s.onerror = reject;
-        document.head.appendChild(s);
-      });
-    }
-    _markedReady = !!window.marked;
-  } catch(e) { console.warn('marked load failed', e); _markedReady = false; }
-  return _markedReady;
-}
-
-function looksLikeHtml(str) {
-  return /<\/?[a-z][\s\S]*>/i.test(str || '');
-}
-
-// Very small fallback: convert blank-line separated paragraphs and line breaks
-function simpleMarkdownToHtml(md) {
-  if (!md) return '';
-  // escape basic HTML to avoid injection in fallback
-  const esc = md.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  // paragraphs: split by two or more newlines
-  return esc.split(/\n{2,}/).map(p => '<p>' + p.replace(/\n/g,'<br>') + '</p>').join('\n');
-}
-
-async function renderContentHtml(raw) {
-  if (!raw) return '';
-  if (looksLikeHtml(raw)) return raw; // already HTML (migrated old posts)
-  const ok = await ensureMarked();
-  if (ok && window.marked) {
-    try { return window.marked.parse(raw); } catch(e) { console.warn('marked parse fail', e); }
-  }
-  return simpleMarkdownToHtml(raw);
-}
-
-function stripToText(htmlOrMd) {
-  if (!htmlOrMd) return '';
-  // If it's markdown, just remove common markdown syntax for excerpt
-  if (!looksLikeHtml(htmlOrMd)) {
-    return htmlOrMd.replace(/[#>*_`~\-!\[\]\(\)]/g,' ').replace(/\s+/g,' ').trim();
-  }
-  // else HTML -> text
-  const tmp = document.createElement('div');
-  tmp.innerHTML = htmlOrMd;
-  return (tmp.textContent || '').trim();
-}
-// /* Markdown support end */
-// ===== News Board & Latest Notices =====
-async function fetchNewsEntries() {
-  try {
-    const res = await fetch('/assets/data/news.json', { cache: 'no-store' });
-    const data = await res.json();
-    // Support both array root and { entries: [] }
-    const arr = Array.isArray(data) ? data : (Array.isArray(data.entries) ? data.entries : []);
-    // Normalize date to ISO string and sort desc
-    const norm = arr.map(x => ({
-      id: x.id || '',
-      date: (x.date || '').slice(0,10),
-      title: x.title || '',
-      content: x.content || '',
-      attachments: Array.isArray(x.attachments) ? x.attachments : []
-    }));
-    norm.sort((a,b) => (b.date||'').localeCompare(a.date||''));
-    return norm;
-  } catch (e) {
-    console.error('Failed to load news.json', e);
-    return [];
-  }
 }
 
 
