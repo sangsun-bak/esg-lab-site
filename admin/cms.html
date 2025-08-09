@@ -8,65 +8,49 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --green:#0B7A4B;
-      --ink:#111827;
-      --muted:#6b7280;
-      --cms-header:56px; /* Decap CMS header approximate height */
-      --toolbar:46px;    /* our custom toolbar height */
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:#fff;color:var(--ink);
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,'맑은 고딕',sans-serif}
-    /* Do NOT hide Decap header; keep publish buttons visible */
-    /* Custom toolbar sits BELOW the CMS header so it never overlaps publish buttons */
-    .toolbar{
-      position:fixed;left:0;right:0;top:var(--cms-header);
-      height:var(--toolbar);display:flex;align-items:center;gap:10px;
-      padding:0 12px;background:#f7faf9;border-bottom:1px solid #e5e7eb;z-index:999;
-    }
-    .toolbar a,.toolbar button{
-      border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:8px 12px;
-      text-decoration:none;color:#111827;cursor:pointer
-    }
-    .toolbar .primary{background:var(--green);color:#fff;border-color:transparent}
-    .cms-root{margin-top:calc(var(--cms-header) + var(--toolbar));}
-    @media (max-width: 720px){
-      .toolbar{flex-wrap:wrap;height:auto;padding:8px 10px;gap:6px}
-      .cms-root{margin-top:calc(var(--cms-header) + 60px)}
+    :root{--green:#0B7A4B;--ink:#111827}
+    html,body{margin:0;padding:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,'맑은 고딕',sans-serif}
+    /* Decap 상단 탭 바(콘텐츠/미디어) 완전 숨김 */
+    .nc-appHeader, .nc-appBar { display: none !important; }
+    /* 혹시 남아있을 margin-top 제거 */
+    .cms-root { margin-top: 0 !important; }
+    /* 우하단 대시보드 버튼 (FAB) */
+    #admin-fab {
+      position: fixed; right: 16px; bottom: 16px; z-index: 9999;
+      padding: 10px 14px; border-radius: 999px;
+      background: #0B7A4B; color: #fff; text-decoration: none;
+      box-shadow: 0 8px 20px rgba(0,0,0,.18); font-weight: 600;
     }
   </style>
 </head>
 <body>
-  <div class="toolbar">
-    <a href="/admin/" class="primary">← 대시보드로</a>
-    <button onclick="openCollection('news')">소식/이벤트</button>
-    <button onclick="openCollection('pubs')">발간저널</button>
-    <span style="color:var(--muted);font-size:14px;margin-left:6px">로그인 후 두 게시판을 오가며 관리하세요</span>
-  </div>
-
   <div class="cms-root"></div>
 
+  <!-- Netlify Identity & Decap CMS -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
   <script>
-    // Ensure invite token is handled once (query -> hash) without loops
+    // 초대 토큰 1회 처리: ?invite_token=... -> #/invite_token=...
     (function ensureInviteTokenOnce(){
-      try{
+      try {
         const u = new URL(location.href);
         const token = u.searchParams.get('invite_token');
-        if (token && !location.hash.includes('invite_token')) {
-          // replace to avoid back-button loop
-          history.replaceState(null, '', '/admin/cms.html#/invite_token=' + token);
+        const already = location.hash.includes('invite_token');
+        if (token && !already) {
+          location.replace('/admin/cms.html#/invite_token=' + token);
         }
-      }catch(e){}
+      } catch(e) {}
     })();
 
-    // Quick collection links (no reload if already there)
+    // 컬렉션 빠른 열기(필요시 대시보드에서 링크로 사용)
     function openCollection(name){
-      const dest = '/admin/cms.html#/collections/' + encodeURIComponent(name);
-      if (location.href !== dest) location.href = dest;
+      const url = '/admin/cms.html#/collections/' + encodeURIComponent(name);
+      if (location.href !== url) location.href = url;
     }
   </script>
+
+  <!-- 우하단 대시보드로 돌아가기 -->
+  <a id="admin-fab" href="/admin/">← 대시보드</a>
 </body>
 </html>
