@@ -9,6 +9,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="/assets/styles.css" rel="stylesheet"/>
 <script defer="" src="/assets/script.js"></script>
+
+<style>
+  /* Archive layout override: make publications list use main wide area */
+  #pubs-archive { max-width: 1000px; margin: 0 auto; }
+  #pubs-archive .paper-list { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 920px){
+    #pubs-archive .paper-list { grid-template-columns: 1fr 1fr; }
+  }
+  /* If the list was inside a narrow left rail, let it expand */
+  .archive-left, .archive-rail-left { width: 100%; }
+</style>
+
 </head><body><header class="site-header">
 <div class="container nav-row">
 <a class="brand" href="/index.html">
@@ -37,7 +49,10 @@
 <a href="archive.html">발간논문(아카이브)</a>
 </nav>
 </aside>
-<section class="sbr-main"><div class="paper-list">
+<section class="sbr-main">
+<h1>발간논문 (Archive)</h1>
+<h2>Vol.1 No.1 (2025)</h2>
+<div class="paper-list">
 </div>
 </section>
 <div id="pubs-archive"></div><div id="pubs-modal" style="display:none"></div></main>
