@@ -1,66 +1,48 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>성공회대학교 ESG경영연구소 · Social Business Review (SBR)</title>
-<meta name="description" content="성공회대학교 ESG경영연구소 · Social Business Review 저널" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/styles.css" />
-<script defer src="/assets/script.js"></script>
-</head><body><header class="site-header">
-  <div class="container nav-row">
-    <a class="brand" href="index.html">
-      <img src="/assets/logo.webp" class="logo" alt="연구소 로고 자리">
-      
-    </a>
-    <button class="nav-toggle" aria-label="메뉴 열기" aria-expanded="false">☰</button>
-    <nav class="site-nav">
-      <a href="/about.html">연구소 소개</a>
-      <a href="/team.html">연구진</a>
-      <a href="/research.html">연구/프로젝트</a>
-      <a href="/publications.html">연구성과</a>
-      <a href="/news.html">소식/이벤트</a>
-      <a href="/sbr/index.html"><strong>SBR 저널</strong></a>
-      <a href="/contact.html">문의</a>
-    </nav>
-  </div>
-</header>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact | ESG 경영연구소</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <meta name="description" content="ESG 경영연구소 연락처">
+  <style>
+    /* 페이지 전용 최소 보완: 기존 구조는 유지, 레이아웃만 정돈 */
+    .contact-wrap{max-width:1100px;margin:40px auto;padding:0 16px}
+    .contact-grid{display:grid;grid-template-columns:1fr;gap:24px}
+    @media (min-width: 960px){
+      .contact-grid{grid-template-columns: 1.1fr .9fr;gap:28px}
+    }
+    .card{border:1px solid #eee;border-radius:14px;background:#fff}
+    .card .body{padding:16px 18px}
+    .addr p{margin:.25rem 0;line-height:1.8}
+    .label{display:inline-block;min-width:88px;color:#555}
+    iframe.map{width:100%;aspect-ratio: 16/10;border:0;border-radius:14px}
+  </style>
+</head>
+<body>
+  <main class="contact-wrap">
+    <header><h1>연락처</h1></header>
 
-<main class="container page">
-<h1>문의</h1>
-<div class="contact-grid">
-  <div><h2>연락처</h2>
-  <p><strong>이메일:</strong> <a href="mailto:esg@skhu.ac.kr">esg@skhu.ac.kr</a> <!-- TODO: 수정 --></p>
-  <p><strong>전화:</strong> 02-000-0000 <!-- TODO: 수정 --></p>
-  <p><strong>주소:</strong> (우) 00000 서울시 ○○구 ○○로 00, 성공회대학교 <!-- TODO: 수정 --></p></div>
-  <div><h2>오시는 길</h2><div class="map-placeholder">지도 영역 (Google Maps iframe)</div></div>
-</div>
-</main><footer class="site-footer">
-  <div class="container footer-grid">
-    <div>
-      <h4>성공회대학교 ESG경영연구소</h4>
-      <p>지속가능한 미래를 위한 연구 및 교육, 산업·공공 협력</p>
-    </div>
-    <div>
-      <h4>연락처</h4>
-      <p><strong>이메일:</strong> <a href="mailto:esg@skhu.ac.kr">esg@skhu.ac.kr</a> <!-- TODO: 이메일 수정 --></p>
-      <p><strong>전화:</strong> 02-000-0000 <!-- TODO: 전화번호 수정 --></p>
-      <p><strong>주소:</strong> (우) 00000 서울시 ○○구 ○○로 00, 성공회대학교 <!-- TODO: 주소 수정 --></p>
-    </div>
-    <div>
-      <h4>SBR 바로가기</h4>
-      <ul class="quick-links">
-        <li><a href="/sbr/index.html">저널 홈</a></li>
-        <li><a href="sbr/editorial-policy.html">편집규정</a></li>
-        <li><a href="sbr/ethics.html">윤리헌장</a></li>
-        <li><a href="sbr/peer-review.html">심사절차</a></li>
-        <li><a href="sbr/call-for-papers.html">투고 안내/모집 공고</a></li>
-        <li><a href="sbr/archive.html">발간논문(아카이브)</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="container legal">
-    <small>© <span id="year"></span> 성공회대학교 ESG경영연구소 · Social Business Review (SBR)</small>
-  </div>
-</footer>
-</body></html>
+    <section class="contact-grid">
+      <article class="card">
+        <div class="body addr" aria-labelledby="addr-title">
+          <h2 id="addr-title">주소</h2>
+          <p><span class="label">국문</span>08359 서울특별시 구로구 연동로 320 (항동, 성공회대학교)</p>
+          <p><span class="label">영문</span>Sungkonghoe University, 320 Yeondong-ro, Guro-gu, Seoul, 08359, Republic of Korea</p>
+          <p><span class="label">Tel</span>+82-2-2610-4114 &nbsp;&nbsp; <span class="label">Fax</span>+82-2-2683-8858</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="body">
+          <h2>오시는 길</h2>
+          <p>지하철 1·7호선 <strong>온수(성공회대입구)</strong>역 하차, 도보 약 10분</p>
+          <iframe class="map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?q=Sungkonghoe%20University%2C%20320%20Yeondong-ro%2C%20Guro-gu%2C%20Seoul%2008359&z=16&output=embed" allowfullscreen title="Sungkonghoe University map"></iframe>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
