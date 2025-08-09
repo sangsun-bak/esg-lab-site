@@ -198,10 +198,6 @@ header .logo img {
 .modal-body pre { background:#f6f8fa; padding: .6rem; overflow:auto; border-radius: .6rem; }
 
 
-/* --- Pubs board / modal typography --- */
-.news-modal .modal-body p{margin:.6rem 0; line-height:1.8}
-.news-modal .modal-body h1,.news-modal .modal-body h2,.news-modal .modal-body h3{margin:1rem 0 .4rem}
-.news-modal .modal-body ul,.news-modal .modal-body ol{margin:.6rem 0 .6rem 1.1rem}
-.news-modal .modal-body code{background:#f3f4f6; padding:.1rem .3rem; border-radius:.3rem}
-.row .btn.btn-sm{margin-right:.4rem}
-.pubs-board .news-item{margin-bottom:.8rem}
+/* Publications specific */
+.pub-actions { display:flex; gap:.6rem; margin-top:.4rem; align-items:center; flex-wrap:wrap; }
+.pubs-board .news-item, .pubs-archive .news-item { background:#fff; border:1px solid #eef1f1; border-radius:1rem; padding:1rem; box-shadow: var(--shadow); margin:.6rem 0; }

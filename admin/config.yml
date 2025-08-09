@@ -11,6 +11,8 @@ locale: "ko"
 collections:
   - name: "news"
     label: "소식/이벤트"
+    label_singular: "소식"
+    description: "소식/이벤트 게시판 글을 관리합니다"
     files:
       - name: "news_json"
         label: "소식 목록 (news.json)"
@@ -22,38 +24,41 @@ collections:
             widget: list
             summary: "{{fields.date}} — {{fields.title}}"
             fields:
-              - { label: "ID", name: "id", widget: "string" }
+              - { label: "ID (자동/고유)", name: "id", widget: "string", hint: "영문/숫자/하이픈으로 고유값. 예: 2025-08-10-sbr-cfp" }
               - { label: "날짜", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
               - { label: "제목", name: "title", widget: "string" }
-              - { label: "본문(Markdown 가능)", name: "content", widget: "markdown" }
+              - { label: "본문", name: "content", widget: "markdown" }
               - label: "첨부파일"
                 name: "attachments"
                 widget: "list"
                 collapsed: true
                 fields:
                   - { label: "파일", name: "file", widget: "file" }
-                  - { label: "표시 이름", name: "name", widget: "string", required: false }
+                  - { label: "표시 이름(선택)", name: "name", widget: "string", required: false }
+
 
   - name: "pubs"
     label: "발간논문"
+    label_singular: "논문"
+    description: "발간논문(아카이브) 항목을 관리합니다"
     files:
       - name: "pubs_json"
         label: "발간논문 목록 (pubs.json)"
         file: "assets/data/pubs.json"
         format: json
         fields:
-          - label: "발간논문 목록"
+          - label: "발간논문"
             name: "entries"
             widget: list
             summary: "{{fields.date}} — {{fields.title}}"
             fields:
-              - { label: "ID", name: "id", widget: "string" }
+              - { label: "ID (고유)", name: "id", widget: "string", hint: "영문/숫자/하이픈. 예: sbr-v1n1-p1" }
               - { label: "날짜", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
               - { label: "제목", name: "title", widget: "string" }
-              - { label: "저자(쉼표로 구분)", name: "authors", widget: "string", required: false }
-              - { label: "초록(Markdown 가능)", name: "abstract", widget: "markdown", required: false }
-              - { label: "권(Volume)", name: "volume", widget: "string", required: false }
-              - { label: "호(Issue)", name: "issue", widget: "string", required: false }
+              - { label: "저자", name: "authors", widget: "list", field: {label: "저자명", name: "name", widget: "string"} }
+              - { label: "초록", name: "abstract", widget: "markdown", required: false }
+              - { label: "PDF", name: "pdf", widget: "file", media_folder: "assets/papers", public_folder: "/assets/papers" }
+              - { label: "권(Vol)", name: "volume", widget: "string", required: false }
+              - { label: "호(No)", name: "issue", widget: "string", required: false }
               - { label: "페이지", name: "pages", widget: "string", required: false }
               - { label: "DOI", name: "doi", widget: "string", required: false }
-              - { label: "PDF 파일", name: "pdf", widget: "file", media_folder: "assets/papers", public_folder: "/assets/papers", required: false }

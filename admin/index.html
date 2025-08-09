@@ -1,50 +1,90 @@
-<!doctype html><html lang="ko"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>관리자 대시보드</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--green:#0B7A4B;--bg:#fff;--muted:#6b7280;--shadow:0 6px 20px rgba(0,0,0,.06);}
-*{box-sizing:border-box}html,body{margin:0;padding:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Noto Sans,Apple SD Gothic Neo,'맑은 고딕',sans-serif;background:#f6faf8;color:#111}
-.container{width:min(900px,92vw);margin:40px auto}
-h1{font-size:28px;margin:0 0 18px}p.muted{color:var(--muted);margin-top:4px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
-.card{background:#fff;border:1px solid #eef1f1;border-radius:16px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
-.card h3{margin:0 0 6px;font-size:18px} .card p{margin:0 0 10px;color:#374151;line-height:1.6}
-.card a.btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--green);color:#fff;text-decoration:none}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.small a{color:#064C30;text-decoration:none}
-.footer{margin-top:24px;color:#6b7280;font-size:14px}
-</style>
-</head><body><div class="container">
-  <h1>관리자 대시보드</h1>
-  <p class="muted">원하는 관리 영역을 선택하세요.</p>
+
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 포털 | ESG경영연구소</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,'맑은 고딕',sans-serif;margin:0;padding:2rem;background:#f6faf8;color:#0e1f18}
+    .wrap{max-width:960px;margin:0 auto}
+    h1{font-size:1.6rem;margin:0 0 1rem}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .card{background:#fff;border:1px solid #e7efea;border-radius:1rem;box-shadow:0 6px 20px rgba(0,0,0,.06);padding:1rem}
+    .card h2{margin:.2rem 0 .6rem;font-size:1.1rem}
+    .btn{display:inline-block;padding:.6rem .9rem;border-radius:.7rem;border:1px solid #0B7A4B;background:#0B7A4B;color:#fff;text-decoration:none}
+    .muted{color:#6b7280}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+    .row{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+  </style>
+</head>
+<body>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<div class="wrap">
+  <div class="top">
+    <h1>관리자 포털</h1>
+    <div class="row">
+      <button id="loginBtn" class="btn" style="background:#2F855A;border-color:#2F855A">로그인</button>
+      <button id="logoutBtn" class="btn" style="background:#fff;color:#0B7A4B">로그아웃</button>
+    </div>
+  </div>
+  <p class="muted">소식/이벤트와 발간논문을 한 곳에서 관리하세요.</p>
   <div class="grid">
     <div class="card">
-      <h3>소식 / 이벤트</h3>
-      <p>게시글 작성·수정·첨부 파일 업로드</p>
-      <a class="btn" href="/admin/cms.html#/collections/news">관리하기</a>
+      <h2>소식 / 이벤트</h2>
+      <p class="muted">공지, 세미나, 채용 등</p>
+      <a class="btn" href="/admin/#/collections/news">관리하기</a>
     </div>
     <div class="card">
-      <h3>발간논문</h3>
-      <p>논문 메타데이터·초록 입력, PDF 업로드</p>
-      <a class="btn" href="/admin/cms.html#/collections/pubs">관리하기</a>
+      <h2>발간논문 (아카이브)</h2>
+      <p class="muted">논문 메타데이터 및 PDF</p>
+      <a class="btn" href="/admin/#/collections/pubs">관리하기</a>
     </div>
   </div>
-  <div class="row small" style="margin-top:16px">
-    <a href="/admin/cms.html#/settings">CMS 설정</a>
-    <a href="/admin/cms.html#/workflow">작업 중(Drafts)</a>
-    <a href="/">사이트 홈으로</a>
-  </div>
-  <div class="footer">Netlify Identity 로그인 후 이용 가능합니다.</div>
 </div>
 <script>
-// 초대 토큰이 메인에서 열려도 /admin/cms.html로 넘기기
 (function(){
-  var h = location.hash||'';
-  if(h.indexOf('invite_token=')>=0 && location.pathname.indexOf('/admin/cms.html')===-1){
-    location.href = '/admin/cms.html' + h;
+  // invite token hash on root -> forward to /admin/
+  try {
+    var h = window.location.hash || '';
+    if (h.indexOf('invite_token=') !== -1 && window.location.pathname !== '/admin/') {
+      window.location.replace('/admin/' + h);
+      return;
+    }
+  } catch(e){}
+
+  var id = window.netlifyIdentity;
+  var loginBtn = document.getElementById('loginBtn');
+  var logoutBtn = document.getElementById('logoutBtn');
+
+  function updateUI(user){
+    loginBtn.style.display = user ? 'none' : 'inline-block';
+    logoutBtn.style.display = user ? 'inline-block' : 'none';
   }
+
+  if (id) {
+    id.on('init', updateUI);
+    id.on('login', function(user){
+      updateUI(user);
+    });
+    id.on('logout', function(){
+      updateUI(null);
+    });
+    id.init();
+  }
+
+  loginBtn.addEventListener('click', function(){
+    if (id) id.open('login');
+  });
+  logoutBtn.addEventListener('click', function(){
+    if (id) id.logout();
+  });
 })();
 </script>
-</body></html>
+<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+</body>
+</html>
