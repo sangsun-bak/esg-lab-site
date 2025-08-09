@@ -15,10 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
 /* === News rendering (auto from assets/data/news.json) === */
 async function loadNewsData() {
   try {
-    const res = await fetch('assets/data/news.json', {cache:'no-store'});
-    if (!res.ok) throw new Error('Failed to load news.json');
+    const url = '/assets/data/news.json?v=' + Date.now();
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to load news.json: ' + res.status);
     const data = await res.json();
-    data.sort((a,b)=> (a.date<b.date?1:-1)); // newest first
+    data.sort((a,b)=> (a.date < b.date ? 1 : -1)); // newest first
     return data;
   } catch (e) {
     console.error(e);
@@ -32,7 +33,7 @@ async function renderNewsBrief(ulId, limit=4) {
   listEl.innerHTML = '';
   const slice = items.slice(0, limit);
   if (slice.length === 0) {
-    listEl.innerHTML = '<li>목록을 불러오지 못했습니다. 잠시 후 새로고침 해주세요.</li>';
+    listEl.innerHTML = '<li>목록을 불러오지 못했습니다.</li>';
     return;
   }
   slice.forEach(it => {
@@ -43,42 +44,7 @@ async function renderNewsBrief(ulId, limit=4) {
     li.appendChild(a);
     listEl.appendChild(li);
   });
-}) ${it.title}`;
-    li.appendChild(a);
-    listEl.appendChild(a);
-    a.prepend(li);
-  });
 }
-
-async function renderNewsList(containerId) {
-  const wrap = document.getElementById(containerId);
-  if (!wrap) return;
-  const items = await loadNewsData();
-  wrap.innerHTML = '';
-  const ul = document.createElement('ul');
-  ul.className = 'news-list';
-  items.forEach(it => {
-    const li = document.createElement('li');
-    li.innerHTML = `<a href="${it.href}">(${it.date}) ${it.title}</a>`;
-    ul.appendChild(li);
-  });
-  wrap.appendChild(ul);
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  if (document.getElementById('news-brief')) renderNewsBrief('news-brief', 4);
-  if (document.getElementById('news-list-wrap')) renderNewsList('news-list-wrap');
-});
-
-/* === News rendering (robust) === */
-async function tryFetchJson(urls) {
-  for (const u of urls) {
-    try {
-      const cacheBust = u + (u.includes('?') ? '&' : '?') + 'v=' + Date.now();
-      const res = await fetch(cacheBust, { cache: 'no-store' });
-      if (res.ok) return await res.json();
-    } catch (e) { /* try next */ }
-  }
   throw new Error('All fetch attempts failed: ' + urls.join(', '));
 }
 
@@ -96,8 +62,10 @@ function candidatePaths(rel) {
 
 async function loadNewsData() {
   try {
-    const paths = candidatePaths('assets/data/news.json');
-    const data = await tryFetchJson(paths);
+    const url = '/assets/data/news.json?v=' + Date.now();
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to load news.json: ' + res.status);
+    const data = await res.json();
     data.sort((a,b)=> (a.date < b.date ? 1 : -1)); // newest first
     return data;
   } catch (e) {
