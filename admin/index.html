@@ -1,48 +1,50 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>관리자 | 소식/이벤트 게시판</title>
-  <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css">
-</head>
-<body>
-  <!-- Netlify Identity Widget for login -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  <script>
-    // Redirect to site after logout/login if needed
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on('init', user => {
-        if (!user) {
-          window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
-        }
-      });
-    }
-  </script>
-
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>관리자 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#0B7A4B;--bg:#fff;--muted:#6b7280;--shadow:0 6px 20px rgba(0,0,0,.06);}
+*{box-sizing:border-box}html,body{margin:0;padding:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Noto Sans,Apple SD Gothic Neo,'맑은 고딕',sans-serif;background:#f6faf8;color:#111}
+.container{width:min(900px,92vw);margin:40px auto}
+h1{font-size:28px;margin:0 0 18px}p.muted{color:var(--muted);margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.card{background:#fff;border:1px solid #eef1f1;border-radius:16px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.card h3{margin:0 0 6px;font-size:18px} .card p{margin:0 0 10px;color:#374151;line-height:1.6}
+.card a.btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--green);color:#fff;text-decoration:none}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.small a{color:#064C30;text-decoration:none}
+.footer{margin-top:24px;color:#6b7280;font-size:14px}
+</style>
+</head><body><div class="container">
+  <h1>관리자 대시보드</h1>
+  <p class="muted">원하는 관리 영역을 선택하세요.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>소식 / 이벤트</h3>
+      <p>게시글 작성·수정·첨부 파일 업로드</p>
+      <a class="btn" href="/admin/cms.html#/collections/news">관리하기</a>
+    </div>
+    <div class="card">
+      <h3>발간논문</h3>
+      <p>논문 메타데이터·초록 입력, PDF 업로드</p>
+      <a class="btn" href="/admin/cms.html#/collections/pubs">관리하기</a>
+    </div>
+  </div>
+  <div class="row small" style="margin-top:16px">
+    <a href="/admin/cms.html#/settings">CMS 설정</a>
+    <a href="/admin/cms.html#/workflow">작업 중(Drafts)</a>
+    <a href="/">사이트 홈으로</a>
+  </div>
+  <div class="footer">Netlify Identity 로그인 후 이용 가능합니다.</div>
+</div>
 <script>
-  // Normalize invite token in query to hash for the widget
-  (function(){
-    try {
-      var params = new URLSearchParams(window.location.search);
-      var token = params.get('invite_token');
-      if (token && window.location.hash.indexOf('invite_token=') === -1) {
-        window.location.replace(window.location.pathname + '#/invite_token=' + token);
-      }
-    } catch(e) {}
-  })();
-  if (window.netlifyIdentity) {
-    // Ensure widget boot if hash already set
-    window.netlifyIdentity.on('init', function(user){
-      if (!user && window.location.hash.indexOf('invite_token=') !== -1) {
-        // The widget should auto-handle; ensure panel opens
-        try { window.netlifyIdentity.open('login'); } catch(e) {}
-      }
-    });
+// 초대 토큰이 메인에서 열려도 /admin/cms.html로 넘기기
+(function(){
+  var h = location.hash||'';
+  if(h.indexOf('invite_token=')>=0 && location.pathname.indexOf('/admin/cms.html')===-1){
+    location.href = '/admin/cms.html' + h;
   }
+})();
 </script>
-
-</body>
-</html>
+</body></html>

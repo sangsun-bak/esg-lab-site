@@ -270,3 +270,136 @@ function renderLatest3(entries) {
     list.appendChild(li);
   });
 }
+
+
+// ===== Utilities: ensure marked is available for Markdown =====
+(function(){
+  function ensureMarked(cb){
+    if (window.marked) return cb();
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+  window.__ensureMarked = ensureMarked;
+})();
+
+// ===== Pubs board =====
+async function fetchPubsEntries(){
+  try{
+    const res = await fetch('/assets/data/pubs.json', { cache: 'no-store' });
+    const data = await res.json();
+    const arr = Array.isArray(data) ? data : (Array.isArray(data.entries)? data.entries : []);
+    const norm = arr.map(x => ({
+      id: x.id || '',
+      date: (x.date || '').slice(0,10),
+      title: x.title || '',
+      authors: x.authors || '',
+      abstract: x.abstract || '',
+      volume: x.volume || '',
+      issue: x.issue || '',
+      pages: x.pages || '',
+      doi: x.doi || '',
+      pdf: x.pdf || ''
+    }));
+    norm.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+    return norm;
+  }catch(e){ console.error('Failed to load pubs.json', e); return []; }
+}
+
+function renderPubsBoard(entries){
+  const board = document.querySelector('#pubs-board');
+  if(!board) return;
+  board.innerHTML='';
+  entries.forEach(item => {
+    const card = document.createElement('article');
+    card.className='news-item';
+    const h3 = document.createElement('h3');
+    const a = document.createElement('a');
+    a.href='javascript:void(0)';
+    a.textContent = item.title || '(무제)';
+    a.addEventListener('click', ()=> openPubModal(item));
+    h3.appendChild(a);
+    const meta = document.createElement('div');
+    meta.className='muted';
+    let bits = [];
+    if(item.date) bits.push(item.date);
+    if(item.authors) bits.push(item.authors);
+    if(item.volume || item.issue) bits.push(['Vol.', item.volume, 'No.', item.issue].filter(Boolean).join(' '));
+    if(item.pages) bits.push(item.pages);
+    meta.textContent = bits.join(' · ');
+    const actions = document.createElement('div');
+    actions.className='row';
+    if(item.pdf){
+      const btn = document.createElement('a');
+      btn.className='btn btn-sm';
+      btn.href=item.pdf;
+      btn.target='_blank';
+      btn.textContent='PDF';
+      actions.appendChild(btn);
+    }
+    if(item.doi){
+      const btn = document.createElement('a');
+      btn.className='btn btn-sm';
+      btn.href='https://doi.org/'+ item.doi.replace(/^https?:\/\/(dx\.)?doi\.org\//,'');
+      btn.target='_blank';
+      btn.textContent='DOI';
+      actions.appendChild(btn);
+    }
+    card.appendChild(h3);
+    card.appendChild(meta);
+    if(actions.children.length) card.appendChild(actions);
+    board.appendChild(card);
+  });
+}
+
+function openPubModal(item){
+  let modal = document.getElementById('pubs-modal');
+  if(!modal){
+    modal = document.createElement('div'); modal.id='pubs-modal'; document.body.appendChild(modal);
+  }
+  modal.className='news-modal'; modal.innerHTML='';
+  const overlay = document.createElement('div'); overlay.className='modal-overlay';
+  const box = document.createElement('div'); box.className='modal-box';
+  const title = document.createElement('h3'); title.textContent = item.title || '(무제)';
+  const meta = document.createElement('div'); meta.className='muted';
+  let bits = []; if(item.date) bits.push(item.date); if(item.authors) bits.push(item.authors);
+  if(item.volume || item.issue) bits.push(['Vol.', item.volume, 'No.', item.issue].filter(Boolean).join(' '));
+  if(item.pages) bits.push(item.pages);
+  if(item.doi) bits.push('DOI: '+item.doi);
+  meta.textContent=bits.join(' · ');
+  const body = document.createElement('div'); body.className='modal-body';
+  function setBody(){
+    if(window.marked && item.abstract){
+      body.innerHTML = window.marked.parse(item.abstract);
+    }else{
+      body.textContent = item.abstract || '';
+    }
+  }
+  __ensureMarked(setBody);
+  const actions = document.createElement('div'); actions.className='row'; actions.style.marginTop = '8px';
+  if(item.pdf){
+    const btn = document.createElement('a');
+    btn.className='btn btn-sm'; btn.href=item.pdf; btn.target='_blank'; btn.textContent='PDF 다운로드';
+    actions.appendChild(btn);
+  }
+  if(item.doi){
+    const btn = document.createElement('a');
+    btn.className='btn btn-sm';
+    btn.href='https://doi.org/'+ item.doi.replace(/^https?:\/\/(dx\.)?doi\.org\//,'');
+    btn.target='_blank'; btn.textContent='DOI 열기';
+    actions.appendChild(btn);
+  }
+  const close = document.createElement('button'); close.className='btn btn-sm'; close.textContent='닫기';
+  close.addEventListener('click', ()=> { modal.style.display='none'; });
+  box.appendChild(title); box.appendChild(meta); box.appendChild(body); box.appendChild(actions); box.appendChild(close);
+  modal.appendChild(overlay); modal.appendChild(box); modal.style.display='block';
+}
+
+document.addEventListener('DOMContentLoaded', async()=>{
+  const board = document.querySelector('#pubs-board');
+  if(board){
+    const pubs = await fetchPubsEntries();
+    renderPubsBoard(pubs);
+  }
+});
