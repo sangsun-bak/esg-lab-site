@@ -1,18 +1,55 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>소식 / 이벤트</title><link rel="stylesheet" href="/assets/styles.css"><style>
+<!DOCTYPE html>
 
-/* Modal & board basics (safe additions) */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45)}
-.modal-box{position:fixed;left:50%;top:10vh;transform:translateX(-50%);max-width:840px;width:calc(100% - 2rem);background:#fff;border-radius:1rem;box-shadow:0 6px 20px rgba(0,0,0,.08);padding:1rem;z-index:1000}
-.modal-body{line-height:1.7}
-.news-item{background:#fff;border:1px solid #eef1f1;border-radius:1rem;padding:1rem;box-shadow:0 6px 20px rgba(0,0,0,.04);margin:.6rem 0}
-.btn{display:inline-block;padding:.5rem .8rem;border:1px solid #d1d5db;border-radius:.6rem;background:#fff;text-decoration:none}
-.btn-sm{font-size:.9rem;padding:.35rem .6rem}
-.row{display:flex;gap:.5rem;flex-wrap:wrap;margin:.4rem 0}
-.muted{color:#6b7280}
-</style></head>
-<body><main class="container">
-<h1>소식 / 이벤트</h1>
-<div id="news-board"></div>
-<div id="news-modal" style="display:none"></div>
-</main><script defer src="/assets/script.js"></script></body></html>
+<html lang="ko"><head><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>소식 / 이벤트 | 성공회대학교 ESG경영연구소</title>
+<meta content="성공회대학교 ESG경영연구소 · Social Business Review 저널" name="description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="/assets/styles.css" rel="stylesheet"/>
+<script defer="" src="/assets/script.js"></script>
+</head><body><header class="site-header">
+<div class="container nav-row">
+<a class="brand" href="index.html">
+<img alt="연구소 로고 자리" class="logo" src="/assets/logo.webp"/>
+</a>
+<button aria-expanded="false" aria-label="메뉴 열기" class="nav-toggle">☰</button>
+<nav class="site-nav">
+<a href="/about.html">연구소 소개</a>
+<a href="/team.html">연구진</a>
+<a href="/research.html">연구/프로젝트</a>
+<a href="/publications.html">연구성과</a>
+<a href="/news.html">소식/이벤트</a>
+<a href="/sbr/index.html"><strong>SBR 저널</strong></a>
+<a href="/contact.html">문의</a>
+</nav>
+</div>
+</header><main><div class="container"><h1>소식 / 이벤트</h1><div class="news-board" id="news-board"></div><div class="news-modal" id="news-modal" style="display:none"></div></div></main><footer class="site-footer">
+<div class="container footer-grid">
+<div>
+<h4>성공회대학교 ESG경영연구소</h4>
+<p>지속가능한 미래를 위한 연구 및 교육, 산업·공공 협력</p>
+</div>
+<div>
+<h4>연락처</h4>
+<p><strong>이메일:</strong> <a href="mailto:esg@skhu.ac.kr">esg@skhu.ac.kr</a> <!-- TODO: 이메일 수정 --></p>
+<p><strong>전화:</strong> 02-000-0000 <!-- TODO: 전화번호 수정 --></p>
+<p><strong>주소:</strong> (우) 00000 서울시 ○○구 ○○로 00, 성공회대학교 <!-- TODO: 주소 수정 --></p>
+</div>
+<div>
+<h4>SBR 바로가기</h4>
+<ul class="quick-links">
+<li><a href="/sbr/index.html">저널 홈</a></li>
+<li><a href="sbr/editorial-policy.html">편집규정</a></li>
+<li><a href="sbr/ethics.html">윤리헌장</a></li>
+<li><a href="sbr/peer-review.html">심사절차</a></li>
+<li><a href="sbr/call-for-papers.html">투고 안내/모집 공고</a></li>
+<li><a href="sbr/archive.html">발간논문(아카이브)</a></li>
+</ul>
+</div>
+</div>
+<div class="container legal">
+<small>© <span id="year"></span> 성공회대학교 ESG경영연구소 · Social Business Review (SBR)</small>
+</div>
+</footer></body></html>

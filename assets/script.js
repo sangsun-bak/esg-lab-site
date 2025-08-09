@@ -1,181 +1,512 @@
-document.addEventListener('DOMContentLoaded', async () => {
+
+// Netlify Identity invite token auto-redirect
+(function(){
   try {
-    const [news, pubs] = await Promise.all([fetchNews(), fetchPubs()]);
-    renderNewsBoard(news);
-    renderLatest3(news);
-    renderPubsBoard(pubs);
-    renderPubsArchive(pubs);
-  } catch(e) {
-    console.error(e);
+    var h = window.location.hash || '';
+    if (h.indexOf('invite_token=') !== -1 && window.location.pathname !== '/admin/') {
+      window.location.replace('/admin/' + h);
+    }
+  } catch(e) {}
+})();
+
+document.addEventListener('DOMContentLoaded', () => {
+  const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.querySelector('.site-nav');
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      const open = nav.style.display === 'flex';
+      nav.style.display = open ? 'none' : 'flex';
+      toggle.setAttribute('aria-expanded', String(!open));
+    });
   }
-  // Footer year
-  const y = document.getElementById('year');
-  if (y) y.textContent = new Date().getFullYear();
 });
 
-async function fetchJson(url) {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to load '+url);
-  const data = await res.json();
-  if (Array.isArray(data)) return data;
-  if (data && Array.isArray(data.entries)) return data.entries;
-  return [];
+/* === News rendering (clean) === */
+async function loadNewsData() {
+  try {
+    const res = await fetch('/assets/data/news.json?v=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to load news.json');
+    const data = await res.json();
+    data.sort((a,b)=> (a.date < b.date ? 1 : -1));
+    return data;
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
 }
 
-async function fetchNews(){ try { 
-  return (await fetchJson('/assets/data/news.json'))
-    .map(x=>({id:x.id||'', date:(x.date||'').slice(0,10), title:x.title||'', content:x.content||'', attachments:Array.isArray(x.attachments)?x.attachments:[]}))
-    .sort((a,b)=> (b.date||'').localeCompare(a.date||''));
-} catch(e){ console.warn('news.json missing'); return []; }}
-
-async function fetchPubs(){ try { 
-  return (await fetchJson('/assets/data/pubs.json'))
-    .map(x=>({id:x.id||'', date:(x.date||'').slice(0,10), title:x.title||'', abstract:x.abstract||'', pdf:normalizeUrl(x.pdf), volume:Number(x.volume||0), issue:Number(x.issue||0), pages:x.pages||'', doi:x.doi||'', authors:Array.isArray(x.authors)?x.authors:[]}))
-    .sort((a,b)=> (b.volume-a.volume) || (b.issue-a.issue) || (a.pages||'').localeCompare(b.pages||''));
-} catch(e){ console.warn('pubs.json missing'); return []; }}
-
-function normalizeUrl(u){ if(!u) return ''; if(/^https?:\/\//i.test(u)) return u; if(u.startsWith('/')) return u; return '/'+u.replace(/^\.?\//,''); }
-
-function renderLatest3(entries){
-  const ul = document.querySelector('#latest-news .news-list') || document.getElementById('news-brief');
-  if (!ul) return;
-  ul.innerHTML = '';
-  entries.slice(0,3).forEach(it=>{
+async function renderNewsBrief(ulId, limit=4) {
+  const listEl = document.getElementById(ulId);
+  if (!listEl) return;
+  const items = await loadNewsData();
+  listEl.innerHTML = '';
+  const slice = items.slice(0, limit);
+  if (slice.length === 0) {
+    listEl.innerHTML = '<li>목록을 불러오지 못했습니다.</li>';
+    return;
+  }
+  slice.forEach(it => {
     const li = document.createElement('li');
     const a = document.createElement('a');
-    a.href = '/news.html#'+encodeURIComponent(it.id);
-    a.textContent = `[${it.date}] ${it.title}`;
+    a.href = it.href;
+    a.textContent = `(${it.date}) ${it.title}`;
+    li.appendChild(a);
+    listEl.appendChild(li);
+  });
+}
+
+async function renderNewsList(containerId) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap) return;
+  const items = await loadNewsData();
+  wrap.innerHTML = '';
+  if (items.length === 0) {
+    wrap.innerHTML = '<p>목록을 불러오지 못했습니다.</p>';
+    return;
+  }
+  const ul = document.createElement('ul');
+  ul.className = 'news-list';
+  items.forEach(it => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = it.href;
+    a.textContent = `(${it.date}) ${it.title}`;
     li.appendChild(a);
     ul.appendChild(li);
   });
+  wrap.appendChild(ul);
 }
 
-function renderNewsBoard(entries){
-  const root = document.getElementById('news-board');
-  if (!root) return;
-  root.innerHTML = '';
-  entries.forEach(it=>{
-    const art = document.createElement('article'); art.className='news-item';
-    const h3 = document.createElement('h3'); const a = document.createElement('a'); a.href='javascript:void(0)'; a.textContent=it.title;
-    a.onclick=()=>openNewsModal(it); h3.appendChild(a);
-    const meta = document.createElement('div'); meta.className='muted'; meta.textContent=it.date;
-    const ex = document.createElement('div'); ex.className='excerpt'; ex.textContent=(stripMd(it.content).slice(0,160));
-    art.append(h3, meta, ex); root.appendChild(art);
+document.addEventListener('DOMContentLoaded', ()=>{
+  if (document.getElementById('news-brief')) renderNewsBrief('news-brief', 4);
+  if (document.getElementById('news-list-wrap')) renderNewsList('news-list-wrap');
+});
+
+
+
+
+// /* Markdown support start */
+let _markedReady = false;
+async function ensureMarked() {
+  if (_markedReady) return true;
+  try {
+    if (!window.marked) {
+      // dynamically load marked from CDN
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+        s.onload = resolve; s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+    _markedReady = !!window.marked;
+  } catch(e) { console.warn('marked load failed', e); _markedReady = false; }
+  return _markedReady;
+}
+
+function looksLikeHtml(str) {
+  return /<\/?[a-z][\s\S]*>/i.test(str || '');
+}
+
+// Very small fallback: convert blank-line separated paragraphs and line breaks
+function simpleMarkdownToHtml(md) {
+  if (!md) return '';
+  // escape basic HTML to avoid injection in fallback
+  const esc = md.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // paragraphs: split by two or more newlines
+  return esc.split(/\n{2,}/).map(p => '<p>' + p.replace(/\n/g,'<br>') + '</p>').join('\n');
+}
+
+async function renderContentHtml(raw) {
+  if (!raw) return '';
+  if (looksLikeHtml(raw)) return raw; // already HTML (migrated old posts)
+  const ok = await ensureMarked();
+  if (ok && window.marked) {
+    try { return window.marked.parse(raw); } catch(e) { console.warn('marked parse fail', e); }
+  }
+  return simpleMarkdownToHtml(raw);
+}
+
+function stripToText(htmlOrMd) {
+  if (!htmlOrMd) return '';
+  // If it's markdown, just remove common markdown syntax for excerpt
+  if (!looksLikeHtml(htmlOrMd)) {
+    return htmlOrMd.replace(/[#>*_`~\-!\[\]\(\)]/g,' ').replace(/\s+/g,' ').trim();
+  }
+  // else HTML -> text
+  const tmp = document.createElement('div');
+  tmp.innerHTML = htmlOrMd;
+  return (tmp.textContent || '').trim();
+}
+// /* Markdown support end */
+// ===== News Board & Latest Notices =====
+async function fetchNewsEntries() {
+  try {
+    const res = await fetch('/assets/data/news.json', { cache: 'no-store' });
+    const data = await res.json();
+    // Support both array root and { entries: [] }
+    const arr = Array.isArray(data) ? data : (Array.isArray(data.entries) ? data.entries : []);
+    // Normalize date to ISO string and sort desc
+    const norm = arr.map(x => ({
+      id: x.id || '',
+      date: (x.date || '').slice(0,10),
+      title: x.title || '',
+      content: x.content || '',
+      attachments: Array.isArray(x.attachments) ? x.attachments : []
+    }));
+    norm.sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    return norm;
+  } catch (e) {
+    console.error('Failed to load news.json', e);
+    return [];
+  }
+}
+
+
+function renderBoard(entries) {
+  const board = document.querySelector('#news-board');
+  if (!board) return;
+  board.innerHTML = '';
+  entries.forEach(item => {
+    const card = document.createElement('article');
+    card.className = 'news-item';
+    const h3 = document.createElement('h3');
+    const a = document.createElement('a');
+    a.href = 'javascript:void(0)';
+    a.textContent = item.title;
+    a.addEventListener('click', () => openNewsModal(item));
+    h3.appendChild(a);
+    const meta = document.createElement('div');
+    meta.className = 'muted';
+    meta.textContent = item.date;
+    const excerpt = document.createElement('div');
+    excerpt.className = 'excerpt';
+    // Simple excerpt from content (strip tags)
+    const text = stripToText(item.content || '').slice(0, 160);
+    excerpt.textContent = text;
+    card.appendChild(h3);
+    card.appendChild(meta);
+    card.appendChild(excerpt);
+    board.appendChild(card);
   });
+  // If URL hash matches an item id, open it automatically
   if (location.hash) {
     const id = decodeURIComponent(location.hash.substring(1));
-    const target = entries.find(e=>e.id===id);
+    const target = entries.find(e => e.id === id);
     if (target) openNewsModal(target);
   }
 }
 
-function renderPubsBoard(entries){
-  const root = document.getElementById('pubs-board');
-  if (!root) return;
-  root.innerHTML='';
-  const params = new URLSearchParams(location.hash.replace(/^#/,''));
-  const v = Number(params.get('vol'))||null;
-  const i = Number(params.get('issue'))||null;
-  let list = entries.slice();
-  if (v!=null) list = list.filter(e=>e.volume===v);
-  if (i!=null) list = list.filter(e=>e.issue===i);
-  // Vol/Issue selector
-  const vols = [...new Set(entries.map(e=>e.volume))].sort((a,b)=>b-a);
-  const volWrap = document.createElement('div'); volWrap.className='row';
-  vols.forEach(vol=>{
-    const btn=document.createElement('button'); btn.className='btn btn-sm'; btn.textContent='Vol.'+vol;
-    btn.onclick=()=>{ location.hash='#vol='+vol; renderPubsBoard(entries); };
-    volWrap.appendChild(btn);
-  });
-  root.appendChild(volWrap);
-  if (v!=null){
-    const issues=[...new Set(entries.filter(e=>e.volume===v).map(e=>e.issue))].sort((a,b)=>b-a);
-    const issueWrap = document.createElement('div'); issueWrap.className='row';
-    issues.forEach(is=>{ const b=document.createElement('button'); b.className='btn btn-sm'; b.textContent='No.'+is; b.onclick=()=>{ location.hash='#vol='+v+'&issue='+is; renderPubsBoard(entries); }; issueWrap.appendChild(b); });
-    root.appendChild(issueWrap);
+async function openNewsModal(item) {
+  let modal = document.getElementById('news-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'news-modal';
+    document.body.appendChild(modal);
   }
-  list.forEach(it=>{
-    const art=document.createElement('article'); art.className='news-item';
-    const h3=document.createElement('h3'); const a=document.createElement('a'); a.href='javascript:void(0)'; a.textContent=it.title;
-    a.onclick=()=>openPubModal(it); h3.appendChild(a);
-    const meta=document.createElement('div'); meta.className='muted';
-    meta.textContent = `Vol.${it.volume} No.${it.issue}${it.pages? ' · pp.'+it.pages:''}`;
-    art.append(h3, meta); root.appendChild(art);
-  });
-  // deep-link to paper
-  const p = new URLSearchParams(location.hash.replace(/^#/,'')).get('paper');
-  if (p){ const t=list.find(e=>e.id===p) || entries.find(e=>e.id===p); if (t) openPubModal(t); }
-}
-
-function renderPubsArchive(entries){
-  const root = document.getElementById('pubs-archive');
-  if (!root) return;
-  root.innerHTML='';
-  const grouped = {};
-  entries.forEach(e=>{
-    const key = 'Vol.'+e.volume+' / No.'+e.issue;
-    grouped[key] = grouped[key] || [];
-    grouped[key].push(e);
-  });
-  Object.keys(grouped).sort((a,b)=>{
-    const [av,ai]=a.match(/\d+/g).map(Number);
-    const [bv,bi]=b.match(/\d+/g).map(Number);
-    return (bv-av)||(bi-ai);
-  }).forEach(key=>{
-    const block=document.createElement('section'); const h=document.createElement('h3'); h.textContent=key; block.appendChild(h);
-    const ul=document.createElement('ul');
-    grouped[key].sort((a,b)=> (a.pages||'').localeCompare(b.pages||'')).forEach(e=>{
-      const li=document.createElement('li'); const a=document.createElement('a'); a.href='javascript:void(0)'; a.textContent = e.title + (e.pages? ' (pp.'+e.pages+')':'');
-      a.onclick=()=>openPubModal(e); li.appendChild(a); ul.appendChild(li);
+  modal.className = 'news-modal';
+  modal.innerHTML = '';
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  const title = document.createElement('h3');
+  title.textContent = item.title;
+  const meta = document.createElement('div');
+  meta.className = 'muted';
+  meta.textContent = item.date;
+  const body = document.createElement('div');
+  body.className = 'modal-body';
+  /* render markdown or html */
+  const files = document.createElement('div');
+  if (item.attachments && item.attachments.length) {
+    const ul = document.createElement('ul');
+    item.attachments.forEach(att => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = att.file || att.url || '#';
+      a.target = '_blank';
+      a.textContent = att.name || att.file || '첨부파일';
+      li.appendChild(a);
+      ul.appendChild(li);
     });
-    block.appendChild(ul); root.appendChild(block);
+    files.appendChild(ul);
+  }
+  const close = document.createElement('button');
+  close.className = 'btn btn-sm';
+  close.textContent = '닫기';
+  close.addEventListener('click', () => { modal.style.display = 'none'; });
+  box.appendChild(title);
+  box.appendChild(meta);
+  // render content
+  const _html = await renderContentHtml(item.content || '');
+  body.innerHTML = _html;
+  box.appendChild(body);
+  box.appendChild(files);
+  box.appendChild(close);
+  modal.appendChild(overlay);
+  modal.appendChild(box);
+  modal.style.display = 'block';
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const news = await fetchNewsEntries();
+  renderLatest3(news);
+  renderBoard(news);
+});
+
+function renderLatest3(entries) {
+  // Fill existing '공지' list on homepage if present
+  const list = document.querySelector('#news-brief');
+  if (!list) return;
+  list.innerHTML = '';
+  entries.slice(0,3).forEach(item => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '/news.html#' + encodeURIComponent(item.id);
+    a.textContent = `${item.title} (${item.date})`;
+    li.appendChild(a);
+    list.appendChild(li);
   });
 }
 
-function stripMd(md){ return (md||'').replace(/[#*_>`~\-!\[\]\(\)]/g,' ').replace(/\s+/g,' ').trim(); }
 
-function ensureMarked(cb){
-  if (window.marked) return cb();
-  const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'; s.onload=cb; document.head.appendChild(s);
+// === Utility: load marked for Markdown -> HTML ===
+(function ensureMarked(){
+  if (!window.marked) {
+    var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'; s.defer=true;
+    document.head.appendChild(s);
+  }
+})();
+
+function normalizeAssetUrl(url){
+  if(!url) return '';
+  if(/^https?:\/\//i.test(url)) return url;
+  if(url.startsWith('/')) return url;
+  if(url.startsWith('assets/')) return '/' + url;
+  return url;
 }
 
-function openNewsModal(item){
-  ensureMarked(()=>{
-    const m = getModal(); m.innerHTML='';
-    const box = modalBox();
-    box.append(h3(item.title), small(item.date));
-    const body=document.createElement('div'); body.className='modal-body';
-    try{ body.innerHTML = (item.content && /<\w+/.test(item.content)) ? item.content : window.marked.parse(item.content||''); }catch(e){ body.textContent=item.content||''; }
-    // attachments
-    if (item.attachments && item.attachments.length){
-      const ul=document.createElement('ul'); item.attachments.forEach(att=>{ const li=document.createElement('li'); const a=document.createElement('a'); a.href=normalizeUrl(att.file||att.url||''); a.target='_blank'; a.textContent=att.name||att.file||'첨부'; li.appendChild(a); ul.appendChild(li); });
-      box.append(ul);
+async function fetchJSON(path){
+  try {
+    const res = await fetch(path, {cache:'no-store'});
+    const data = await res.json();
+    return Array.isArray(data) ? data : (data.entries || []);
+  } catch(e){ console.error('fetchJSON failed', path, e); return []; }
+}
+
+// ===== News =====
+async function loadNews(){
+  const entries = await fetchJSON('/assets/data/news.json');
+  // sort by date desc
+  entries.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  // Latest 3 on index
+  const brief = document.querySelector('#latest-news .news-list, #news-brief, .news-brief');
+  if(brief){
+    brief.innerHTML='';
+    entries.slice(0,3).forEach(it=>{
+      const li=document.createElement('li');
+      const a=document.createElement('a');
+      a.href = '/news.html#'+encodeURIComponent(it.id||'');
+      a.textContent = `[${(it.date||'').slice(0,10)}] ${it.title||''}`;
+      li.appendChild(a); brief.appendChild(li);
+    });
+  }
+  // Board
+  const board = document.querySelector('#news-board');
+  if(board){
+    board.innerHTML='';
+    entries.forEach(it=>{
+      const card=document.createElement('article'); card.className='news-item';
+      const h3=document.createElement('h3'); const a=document.createElement('a'); a.href='javascript:void(0)'; a.textContent=it.title||'';
+      a.addEventListener('click',()=>openNewsModal(it)); h3.appendChild(a);
+      const meta=document.createElement('div'); meta.className='muted'; meta.textContent=(it.date||'').slice(0,10);
+      const ex=document.createElement('div'); ex.className='excerpt';
+      const tmp=document.createElement('div'); tmp.innerHTML = it.content || '';
+      const plain=(tmp.textContent||'').trim().replace(/\s+/g,' ').slice(0,160);
+      ex.textContent=plain;
+      card.appendChild(h3); card.appendChild(meta); card.appendChild(ex);
+      board.appendChild(card);
+    });
+    if(location.hash){
+      const id=decodeURIComponent(location.hash.substring(1));
+      const t=entries.find(e=>e.id===id); if(t) openNewsModal(t);
     }
-    box.append(closeBtn(m));
-    m.append(overlay(m), box); m.style.display='block';
+  }
+}
+
+function openNewsModal(it){
+  let modal=document.getElementById('news-modal');
+  if(!modal){ modal=document.createElement('div'); modal.id='news-modal'; document.body.appendChild(modal); }
+  modal.className='news-modal';
+  modal.innerHTML='';
+  const overlay=document.createElement('div'); overlay.className='modal-overlay';
+  const box=document.createElement('div'); box.className='modal-box';
+  const title=document.createElement('h3'); title.textContent=it.title||'';
+  const meta=document.createElement('div'); meta.className='muted'; meta.textContent=(it.date||'').slice(0,10);
+  const body=document.createElement('div'); body.className='modal-body';
+  // If looks like markdown (no tags), render via marked when available
+  if(it.content && it.content.indexOf('<')===-1 && window.marked){
+    body.innerHTML = window.marked.parse(it.content);
+  } else {
+    body.innerHTML = it.content || '';
+  }
+  const files=document.createElement('div');
+  (it.attachments||[]).forEach(att=>{
+    const a=document.createElement('a'); a.href=normalizeAssetUrl(att.file||att.url||'#'); a.target='_blank';
+    a.textContent=att.name || att.file || '첨부파일';
+    const p=document.createElement('p'); p.appendChild(a); files.appendChild(p);
+  });
+  const close=document.createElement('button'); close.className='btn btn-sm'; close.textContent='닫기';
+  close.addEventListener('click',()=>{ modal.style.display='none'; });
+  box.appendChild(title); box.appendChild(meta); box.appendChild(body); box.appendChild(files); box.appendChild(close);
+  modal.appendChild(overlay); modal.appendChild(box); modal.style.display='block';
+}
+
+// ===== Publications (Pubs) =====
+async function loadPubs(){
+  const entries = await fetchJSON('/assets/data/pubs.json');
+  // normalization
+  const items = entries.map(e=> ({
+    id: e.id||'',
+    date: (e.date||'').slice(0,10),
+    title: e.title||'',
+    authors: Array.isArray(e.authors)? e.authors : (typeof e.authors==='string' ? e.authors.split(',').map(s=>({name:s.trim()})) : []),
+    abstract: e.abstract||'',
+    pdf: normalizeAssetUrl(e.pdf||''),
+    volume: Number(e.volume||0),
+    issue: Number(e.issue||0),
+    pages: e.pages||'',
+    doi: e.doi||''
+  }));
+  // Containers
+  const board = document.querySelector('#pubs-board');
+  const archive = document.querySelector('#pubs-archive');
+  if (board) renderPubsBoard(items);
+  if (archive) renderPubsArchive(items);
+  // Deep link
+  if (location.hash){
+    const params = Object.fromEntries(new URLSearchParams(location.hash.replace(/^#/, '').replace(/&/g,'&')).entries());
+    const v = Number(params.vol||params.volume||0);
+    const i = Number(params.issue||0);
+    const pid = params.paper||params.id||'';
+    if (archive) renderPubsArchive(items, v, i, pid);
+  }
+}
+
+function renderPubsBoard(items){
+  const el = document.querySelector('#pubs-board'); if(!el) return;
+  el.innerHTML = '';
+  // Group by volume/issue desc
+  items.sort((a,b)=> (b.volume - a.volume) || (b.issue - a.issue) || (a.pages||'').localeCompare(b.pages||''));
+  items.forEach(it=>{
+    const card=document.createElement('article'); card.className='news-item';
+    const h3=document.createElement('h3'); const a=document.createElement('a'); a.href='javascript:void(0)'; a.textContent=it.title;
+    a.addEventListener('click',()=>openPubModal(it)); h3.appendChild(a);
+    const meta=document.createElement('div'); meta.className='muted'; 
+    meta.textContent = `Vol.${it.volume} No.${it.issue}` + (it.pages? ` · pp.${it.pages}`:'') + (it.date? ` · ${it.date}`:'');
+    const auth=document.createElement('div'); auth.className='muted';
+    auth.textContent = (it.authors||[]).map(a=>a.name||'').filter(Boolean).join(', ');
+    const btns=document.createElement('div');
+    if(it.pdf){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.pdf; b.target='_blank'; b.textContent='PDF'; btns.appendChild(b); }
+    if(it.doi){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.doi; b.target='_blank'; b.textContent='DOI'; btns.appendChild(b); }
+    card.appendChild(h3); card.appendChild(auth); card.appendChild(meta); card.appendChild(btns);
+    el.appendChild(card);
   });
 }
 
-function openPubModal(item){
-  ensureMarked(()=>{
-    const m = getModal(); m.innerHTML='';
-    const box = modalBox();
-    box.append(h3(item.title), small(`Vol.${item.volume} No.${item.issue}${item.pages?' · pp.'+item.pages:''}`));
-    const abs=document.createElement('div'); abs.className='modal-body';
-    try{ abs.innerHTML = (item.abstract && /<\w+/.test(item.abstract)) ? item.abstract : window.marked.parse(item.abstract||''); }catch(e){ abs.textContent=item.abstract||''; }
-    box.append(abs);
-    const act=document.createElement('div'); 
-    if (item.pdf){ const pdf=document.createElement('a'); pdf.className='btn btn-sm'; pdf.href=normalizeUrl(item.pdf); pdf.target='_blank'; pdf.textContent='PDF'; act.appendChild(pdf); }
-    if (item.doi){ const doi=document.createElement('a'); doi.className='btn btn-sm'; doi.href=item.doi; doi.target='_blank'; doi.textContent='DOI'; act.appendChild(doi); }
-    box.append(act);
-    box.append(closeBtn(m));
-    m.append(overlay(m), box); m.style.display='block';
+function renderPubsArchive(items, volFilter=0, issueFilter=0, paperId=''){
+  const el = document.querySelector('#pubs-archive'); if(!el) return;
+  el.innerHTML = '';
+  // Build volumes map
+  const groups = {};
+  items.forEach(it=>{
+    const v=it.volume||0, i=it.issue||0;
+    if(!groups[v]) groups[v] = {};
+    if(!groups[v][i]) groups[v][i] = [];
+    groups[v][i].push(it);
   });
+  const vols = Object.keys(groups).map(n=>Number(n)).sort((a,b)=>b-a);
+  // Controls
+  const nav=document.createElement('div'); nav.className='pubs-nav';
+  vols.forEach(v=>{
+    const volBtn=document.createElement('button'); volBtn.className='btn btn-sm'; volBtn.textContent='Vol. '+v;
+    volBtn.addEventListener('click',()=>renderPubsArchive(items, v, 0, ''));
+    nav.appendChild(volBtn);
+    if(volFilter===v){
+      const issues = Object.keys(groups[v]).map(n=>Number(n)).sort((a,b)=>b-a);
+      const wrap=document.createElement('span'); wrap.style.marginLeft='6px';
+      issues.forEach(i=>{
+        const ib=document.createElement('button'); ib.className='btn btn-sm'; ib.textContent='No. '+i;
+        ib.addEventListener('click',()=>renderPubsArchive(items, v, i, ''));
+        wrap.appendChild(ib);
+      });
+      nav.appendChild(wrap);
+    }
+  });
+  el.appendChild(nav);
+  // List
+  let list=[];
+  vols.forEach(v=>{
+    Object.keys(groups[v]).forEach(i=>{
+      const issueNum=Number(i);
+      groups[v][i].sort((a,b)=> (a.pages||'').localeCompare(b.pages||''));
+    });
+  });
+  if(volFilter && issueFilter){
+    list = groups[volFilter]?.[issueFilter] || [];
+  }else if(volFilter){
+    // flatten all issues in this volume
+    list = Object.values(groups[volFilter]||{}).flat();
+  }else{
+    list = items.slice();
+  }
+  const wrap=document.createElement('div'); wrap.className='pubs-list';
+  list.forEach(it=>{
+    const row=document.createElement('article'); row.className='news-item';
+    const h3=document.createElement('h3'); const a=document.createElement('a'); a.href='javascript:void(0)'; a.textContent=it.title;
+    a.addEventListener('click',()=>openPubModal(it));
+    h3.appendChild(a);
+    const meta=document.createElement('div'); meta.className='muted'; meta.textContent=`Vol.${it.volume} No.${it.issue}` + (it.pages? ` · pp.${it.pages}`:'') + (it.date? ` · ${it.date}`:'');
+    const auth=document.createElement('div'); auth.className='muted'; auth.textContent=(it.authors||[]).map(a=>a.name||'').filter(Boolean).join(', ');
+    const btns=document.createElement('div');
+    if(it.pdf){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.pdf; b.target='_blank'; b.textContent='PDF'; btns.appendChild(b); }
+    if(it.doi){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.doi; b.target='_blank'; b.textContent='DOI'; btns.appendChild(b); }
+    row.appendChild(h3); row.appendChild(auth); row.appendChild(meta); row.appendChild(btns);
+    wrap.appendChild(row);
+  });
+  el.appendChild(wrap);
+  // Deep link open
+  if(paperId){
+    const t=list.find(x=>x.id===paperId); if(t) openPubModal(t);
+  }
 }
 
-function getModal(){ let m=document.getElementById('pubs-modal')||document.getElementById('news-modal'); if (m) return m; m=document.createElement('div'); m.id='modal'; document.body.appendChild(m); return m; }
-function modalBox(){ const box=document.createElement('div'); box.className='modal-box'; return box; }
-function overlay(m){ const o=document.createElement('div'); o.className='modal-overlay'; o.onclick=()=>{m.style.display='none'}; return o; }
-function closeBtn(m){ const b=document.createElement('button'); b.className='btn btn-sm'; b.textContent='닫기'; b.onclick=()=>{m.style.display='none'}; return b; }
-function h3(t){ const e=document.createElement('h3'); e.textContent=t; return e; }
-function small(t){ const e=document.createElement('div'); e.className='muted'; e.textContent=t; return e; }
+function openPubModal(it){
+  let modal=document.getElementById('pubs-modal');
+  if(!modal){ modal=document.createElement('div'); modal.id='pubs-modal'; document.body.appendChild(modal); }
+  modal.className='news-modal'; modal.innerHTML='';
+  const overlay=document.createElement('div'); overlay.className='modal-overlay';
+  const box=document.createElement('div'); box.className='modal-box';
+  const title=document.createElement('h3'); title.textContent=it.title||'';
+  const meta=document.createElement('div'); meta.className='muted'; meta.textContent=`Vol.${it.volume} No.${it.issue}` + (it.pages? ` · pp.${it.pages}`:'') + (it.date? ` · ${it.date}`:'');
+  const auth=document.createElement('div'); auth.className='muted'; auth.textContent=(it.authors||[]).map(a=>a.name||'').filter(Boolean).join(', ');
+  const body=document.createElement('div'); body.className='modal-body';
+  if(it.abstract && it.abstract.indexOf('<')===-1 && window.marked){
+    body.innerHTML = window.marked.parse(it.abstract);
+  } else {
+    body.innerHTML = it.abstract || '';
+  }
+  const actions=document.createElement('div'); 
+  if(it.pdf){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.pdf; b.target='_blank'; b.textContent='PDF'; actions.appendChild(b); }
+  if(it.doi){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.doi; b.target='_blank'; b.textContent='DOI'; actions.appendChild(b); }
+  const close=document.createElement('button'); close.className='btn btn-sm'; close.textContent='닫기'; close.addEventListener('click',()=>{ modal.style.display='none'; });
+  box.appendChild(title); box.appendChild(auth); box.appendChild(meta); box.appendChild(body); box.appendChild(actions); box.appendChild(close);
+  modal.appendChild(overlay); modal.appendChild(box); modal.style.display='block';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  loadNews();
+  loadPubs();
+});

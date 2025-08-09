@@ -12,6 +12,7 @@ collections:
   - name: "news"
     label: "소식/이벤트"
     label_singular: "소식"
+    description: "소식/이벤트 게시판 글을 관리합니다"
     files:
       - name: "news_json"
         label: "소식 목록 (news.json)"
@@ -26,7 +27,7 @@ collections:
               - { label: "ID (고유)", name: "id", widget: "string" }
               - { label: "날짜", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
               - { label: "제목", name: "title", widget: "string" }
-              - { label: "본문 (Markdown)", name: "content", widget: "markdown" }
+              - { label: "본문", name: "content", widget: "markdown" }
               - label: "첨부파일"
                 name: "attachments"
                 widget: "list"
@@ -38,6 +39,7 @@ collections:
   - name: "pubs"
     label: "발간저널"
     label_singular: "논문"
+    description: "권·호·논문, PDF/DOI/초록을 관리합니다"
     files:
       - name: "pubs_json"
         label: "발간논문 목록 (pubs.json)"
