@@ -11,6 +11,18 @@
         "홍길동",
         "두루미"
       ]
+    },
+    {
+      "id": "2025-08-101",
+      "date": "2025-08-09",
+      "title": "협력과 배반",
+      "authors": [
+        "김수한무"
+      ],
+      "pdf": "/assets/papers/mpra_paper_101714.pdf",
+      "volume": "9",
+      "issue": "1",
+      "pages": ""
     }
   ]
 }
