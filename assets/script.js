@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /* === News rendering (auto from assets/data/news.json) === */
 async function loadNewsData() {
   try {
-    const res = await fetch('/assets/data/news.json', {cache:'no-store'});
+    const res = await fetch('assets/data/news.json', {cache:'no-store'});
     if (!res.ok) throw new Error('Failed to load news.json');
     const data = await res.json();
     data.sort((a,b)=> (a.date<b.date?1:-1)); // newest first
@@ -25,13 +25,17 @@ async function loadNewsData() {
     return [];
   }
 }
-
 async function renderNewsBrief(ulId, limit=4) {
   const listEl = document.getElementById(ulId);
   if (!listEl) return;
   const items = await loadNewsData();
   listEl.innerHTML = '';
-  items.slice(0, limit).forEach(it => {
+  const slice = items.slice(0, limit);
+  if (slice.length === 0) {
+    listEl.innerHTML = '<li>목록을 불러오지 못했습니다. 잠시 후 새로고침 해주세요.</li>';
+    return;
+  }
+  slice.forEach(it => {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.href = it.href;
