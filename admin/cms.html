@@ -16,8 +16,34 @@
 </head><body><div class="cms-root"></div>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-<script>(function(){try{const u=new URL(location.href);const t=u.searchParams.get('invite_token');const already=location.hash.includes('invite_token');if(t&&!already){location.replace('/admin/cms.html#/invite_token='+t);}}catch(e){}})();function openCollection(n){const url='/admin/cms.html#/collections/'+encodeURIComponent(n);if(location.href!==url)history.replaceState(null,'',url);}</script>
+<script>(function(){try{const u=new URL(location.href);const t=u.searchParams.get('invite_token');const already=location.hash.includes('invite_token');if(t&&!already){location.replace('/admin/cms.html#/invite_token='+t);}}catch(e){}})();function openCollection(n){const url='/admin/cms.html#/collections/'+encodeURIComponent(n);if(location.href!==url)location.href=url;}</script>
 <a id="admin-fab" href="/admin/">← 대시보드</a>
 
 <a class="adm-back" href="/admin/">← 대시보드</a>
+
+<script>
+// Defensive paste handler: re-insert plain text if something blocks paste
+(function(){
+  document.addEventListener('paste', function(e){
+    try{
+      if(!e || !e.clipboardData) return;
+      // If paste already works, do nothing
+      if(!e.defaultPrevented) return;
+      const text = e.clipboardData.getData('text/plain') || '';
+      if(!text) return;
+      const el = document.activeElement;
+      if(!el) return;
+      if (el.isContentEditable) {
+        // insertText works for contenteditable editors used by Decap
+        document.execCommand('insertText', false, text);
+      } else if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
+        const start = el.selectionStart || 0, end = el.selectionEnd || 0;
+        el.value = (el.value||'').slice(0,start) + text + (el.value||'').slice(end);
+        if (el.setSelectionRange) el.setSelectionRange(start+text.length, start+text.length);
+      }
+    }catch(_){}
+  }, true);
+})();
+</script>
+
 </body></html>

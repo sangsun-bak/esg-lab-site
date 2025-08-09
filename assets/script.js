@@ -407,7 +407,7 @@ function renderPubsBoard(items){
     const meta=document.createElement('div'); meta.className='muted'; 
     meta.textContent = `Vol.${it.volume} No.${it.issue}` + (it.pages? ` · pp.${it.pages}`:'') + (it.date? ` · ${it.date}`:'');
     const auth=document.createElement('div'); auth.className='muted';
-    auth.textContent = (it.authors||[]).map(a=>a.name||'').filter(Boolean).join(', ');
+    auth.textContent = (it.authors||[]).map(a=> (typeof a==='string'?a:(a.name||'')) ).filter(Boolean).join(', ');
     const btns=document.createElement('div');
     if(it.pdf){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.pdf; b.target='_blank'; b.textContent='PDF'; btns.appendChild(b); }
     if(it.doi){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.doi; b.target='_blank'; b.textContent='DOI'; btns.appendChild(b); }
@@ -469,7 +469,7 @@ function renderPubsArchive(items, volFilter=0, issueFilter=0, paperId=''){
     a.addEventListener('click',()=>openPubModal(it));
     h3.appendChild(a);
     const meta=document.createElement('div'); meta.className='muted'; meta.textContent=`Vol.${it.volume} No.${it.issue}` + (it.pages? ` · pp.${it.pages}`:'') + (it.date? ` · ${it.date}`:'');
-    const auth=document.createElement('div'); auth.className='muted'; auth.textContent=(it.authors||[]).map(a=>a.name||'').filter(Boolean).join(', ');
+    const auth=document.createElement('div'); auth.className='muted'; auth.textContent=(it.authors||[]).map(a=> (typeof a==='string'?a:(a.name||'')) ).filter(Boolean).join(', ');
     const btns=document.createElement('div');
     if(it.pdf){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.pdf; b.target='_blank'; b.textContent='PDF'; btns.appendChild(b); }
     if(it.doi){ const b=document.createElement('a'); b.className='btn btn-sm'; b.href=it.doi; b.target='_blank'; b.textContent='DOI'; btns.appendChild(b); }
@@ -491,7 +491,7 @@ function openPubModal(it){
   const box=document.createElement('div'); box.className='modal-box';
   const title=document.createElement('h3'); title.textContent=it.title||'';
   const meta=document.createElement('div'); meta.className='muted'; meta.textContent=`Vol.${it.volume} No.${it.issue}` + (it.pages? ` · pp.${it.pages}`:'') + (it.date? ` · ${it.date}`:'');
-  const auth=document.createElement('div'); auth.className='muted'; auth.textContent=(it.authors||[]).map(a=>a.name||'').filter(Boolean).join(', ');
+  const auth=document.createElement('div'); auth.className='muted'; auth.textContent=(it.authors||[]).map(a=> (typeof a==='string'?a:(a.name||'')) ).filter(Boolean).join(', ');
   const body=document.createElement('div'); body.className='modal-body';
   if(it.abstract && it.abstract.indexOf('<')===-1 && window.marked){
     body.innerHTML = window.marked.parse(it.abstract);

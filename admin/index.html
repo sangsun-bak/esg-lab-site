@@ -31,7 +31,7 @@
     <a class="btn" href="/publications.html" target="_blank">사이트에서 보기</a></div></div>
 </section><footer>© ESG 경영연구소 관리자</footer></div>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script>const loginBtn=document.getElementById('loginBtn');const logoutBtn=document.getElementById('logoutBtn');if(window.netlifyIdentity){netlifyIdentity.on('init',u=>{loginBtn.style.display=u?'none':'inline-block';logoutBtn.style.display=u?'inline-block':'none'});netlifyIdentity.on('login',()=>);netlifyIdentity.on('logout',()=>);loginBtn&&loginBtn.addEventListener('click',()=>netlifyIdentity.open());logoutBtn&&logoutBtn.addEventListener('click',()=>netlifyIdentity.logout());}</script>
+<script>const loginBtn=document.getElementById('loginBtn');const logoutBtn=document.getElementById('logoutBtn');if(window.netlifyIdentity){netlifyIdentity.on('init',u=>{loginBtn.style.display=u?'none':'inline-block';logoutBtn.style.display=u?'inline-block':'none'});netlifyIdentity.on('login',()=>location.reload());netlifyIdentity.on('logout',()=>location.reload());loginBtn&&loginBtn.addEventListener('click',()=>netlifyIdentity.open());logoutBtn&&logoutBtn.addEventListener('click',()=>netlifyIdentity.logout());}</script>
   </div>
 
 
