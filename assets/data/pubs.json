@@ -47,7 +47,20 @@
         "김양희",
         "이희태"
       ],
-      "pdf": "/assets/papers/sbr_제-9권_제1호_2025_08_02_김양희_이희태.pdf"
+      "pdf": "/assets/papers/sbr_제-9권_제1호_2025_08_02_김양희_이희태.pdf",
+      "volume": 9,
+      "issue": 1
+    },
+    {
+      "date": "2025-09-22",
+      "id": "2025-09-22",
+      "title": "한국 교회의 공정무역 실천",
+      "authors": [
+        "김종태"
+      ],
+      "pdf": "/assets/papers/sbr_제-9권_제1호_2025_08_03_김종태.pdf",
+      "volume": 9,
+      "issue": -1
     }
   ]
 }
