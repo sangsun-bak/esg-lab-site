@@ -91,6 +91,25 @@
       "volume": 7,
       "issue": 2,
       "pdf": "/assets/papers/sbr_7-2-_2024_02.pdf"
+    },
+    {
+      "title": "Social Business Review 제7권 제1호",
+      "id": "2023년 8월",
+      "date": "2023-08-25",
+      "authors": [
+        "김성미",
+        "박왕규",
+        "오승주",
+        "허광진",
+        "윤석진",
+        "윤현수",
+        "장지연",
+        "장승권",
+        "노영준"
+      ],
+      "volume": 7,
+      "issue": 1,
+      "pdf": "/assets/papers/sbr_7-1-_2023_08.pdf"
     }
   ]
 }
