@@ -162,8 +162,36 @@
       "issue": 2,
       "pdf": "/assets/papers/sbr_5-2-_2022_02.pdf"
     },
-    {},
-    {},
+    {
+      "title": "Social Business Review 제5권 제1호",
+      "id": "2021년 8월",
+      "date": "2021-08-25",
+      "authors": [
+        "정찬회",
+        "노영한",
+        "변해진",
+        "권순찬",
+        "서진선"
+      ],
+      "volume": 5,
+      "issue": 1,
+      "pdf": "/assets/papers/sbr_5-1-_2021_08.pdf"
+    },
+    {
+      "id": "2021년 2월",
+      "date": "2021-02-25",
+      "title": "Social Business Review 제4권 제2호",
+      "authors": [
+        "이상윤",
+        "이선희",
+        "박성순",
+        "신효진",
+        "허광진"
+      ],
+      "volume": 3,
+      "issue": 2,
+      "pdf": "/assets/papers/sbr_4-2-_2021_02.pdf"
+    },
     {},
     {},
     {}
