@@ -76,6 +76,21 @@
       "volume": 8,
       "issue": 1,
       "pdf": "/assets/papers/sbr_제-8권_제1호_2024_08_최종본-공유-.pdf"
+    },
+    {
+      "id": "2024년 2월",
+      "date": "2024-02-25",
+      "title": "Social Business Review 제7권 제2호",
+      "authors": [
+        "박왕규",
+        "신창섭",
+        "김성미",
+        "황정환",
+        "조성아"
+      ],
+      "volume": 7,
+      "issue": 2,
+      "pdf": "/assets/papers/sbr_7-2-_2024_02.pdf"
     }
   ]
 }
