@@ -207,7 +207,36 @@
       "issue": 2,
       "pdf": "/assets/papers/sbr_4-1-_2020_08.pdf"
     },
-    {},
-    {}
+    {
+      "id": "2020년 2월",
+      "date": "2020-02-25",
+      "title": "Social Business Review 제3권 제2호",
+      "authors": [
+        "조수미",
+        "고경아",
+        "윤숙희",
+        "이상윤",
+        "박상선",
+        "서진선",
+        "김아영"
+      ],
+      "volume": 3,
+      "issue": 1,
+      "pdf": "/assets/papers/sbr_3-2-_2020_02.pdf"
+    },
+    {
+      "id": "2019년 8월",
+      "date": "2019-08-25",
+      "title": "Social Business Review 제3권 제1호",
+      "authors": [
+        "장지연",
+        "정선영",
+        "오희정",
+        "이승주"
+      ],
+      "volume": 3,
+      "issue": 1,
+      "pdf": "/assets/papers/sbr_3-1-_2019_08.pdf"
+    }
   ]
 }
