@@ -54,7 +54,28 @@
       "title": "Social Business Review 제8권 제2호",
       "volume": 8,
       "issue": 2,
-      "pdf": "/assets/papers/sbr_제-8권_제2호_2025_02_완.pdf"
+      "pdf": "/assets/papers/sbr_제-8권_제2호_2025_02_완.pdf",
+      "authors": [
+        "박왕규",
+        "김성미",
+        "황정환",
+        "전혜원",
+        "변일영",
+        "김우태",
+        "장승권"
+      ]
+    },
+    {
+      "id": "2024년 8월",
+      "date": "2024-08-25",
+      "title": "Social Business Review 제8권 제1호",
+      "authors": [
+        "전혜원",
+        "신창섭"
+      ],
+      "volume": 8,
+      "issue": 1,
+      "pdf": "/assets/papers/sbr_제-8권_제1호_2024_08_최종본-공유-.pdf"
     }
   ]
 }
