@@ -110,6 +110,24 @@
       "volume": 7,
       "issue": 1,
       "pdf": "/assets/papers/sbr_7-1-_2023_08.pdf"
+    },
+    {
+      "title": "Social Business Review 제6권 제2호",
+      "id": "2023년 2월",
+      "date": "2023-02-25",
+      "authors": [
+        "권희진",
+        "장승권",
+        "신창섭",
+        "황정환",
+        "김도윤",
+        "서순현",
+        "윤현수",
+        "류기현"
+      ],
+      "volume": 6,
+      "issue": 2,
+      "pdf": "/assets/papers/sbr_6-2-_2023_02.pdf"
     }
   ]
 }
