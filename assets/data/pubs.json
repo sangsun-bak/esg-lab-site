@@ -49,213 +49,6 @@
       "pdf": "/assets/papers/sbr_제-9권_제1호_2025_08_04_신하진_김수림.pdf"
     },
     {
-      "id": "2025년 2월",
-      "date": "2025-02-25",
-      "title": "Social Business Review 제8권 제2호",
-      "volume": 8,
-      "issue": 2,
-      "pdf": "/assets/papers/sbr_제-8권_제2호_2025_02_완.pdf",
-      "authors": [
-        "박왕규",
-        "김성미",
-        "황정환",
-        "전혜원",
-        "변일영",
-        "김우태",
-        "장승권"
-      ]
-    },
-    {
-      "id": "2024년 8월",
-      "date": "2024-08-25",
-      "title": "Social Business Review 제8권 제1호",
-      "authors": [
-        "전혜원",
-        "신창섭"
-      ],
-      "volume": 8,
-      "issue": 1,
-      "pdf": "/assets/papers/sbr_제-8권_제1호_2024_08_최종본-공유-.pdf"
-    },
-    {
-      "id": "2024년 2월",
-      "date": "2024-02-25",
-      "title": "Social Business Review 제7권 제2호",
-      "authors": [
-        "박왕규",
-        "신창섭",
-        "김성미",
-        "황정환",
-        "조성아"
-      ],
-      "volume": 7,
-      "issue": 2,
-      "pdf": "/assets/papers/sbr_7-2-_2024_02.pdf"
-    },
-    {
-      "title": "Social Business Review 제7권 제1호",
-      "id": "2023년 8월",
-      "date": "2023-08-25",
-      "authors": [
-        "김성미",
-        "박왕규",
-        "오승주",
-        "허광진",
-        "윤석진",
-        "윤현수",
-        "장지연",
-        "장승권",
-        "노영준"
-      ],
-      "volume": 7,
-      "issue": 1,
-      "pdf": "/assets/papers/sbr_7-1-_2023_08.pdf"
-    },
-    {
-      "title": "Social Business Review 제6권 제2호",
-      "id": "2023년 2월",
-      "date": "2023-02-25",
-      "authors": [
-        "권희진",
-        "장승권",
-        "신창섭",
-        "황정환",
-        "김도윤",
-        "서순현",
-        "윤현수",
-        "류기현"
-      ],
-      "volume": 6,
-      "issue": 2,
-      "pdf": "/assets/papers/sbr_6-2-_2023_02.pdf"
-    },
-    {
-      "title": "Social Business Review 제6권 제1호",
-      "id": "2022년 8월",
-      "date": "2022-08-25",
-      "authors": [
-        "안보람",
-        "노영준",
-        "윤석진",
-        "최혜연"
-      ],
-      "volume": 6,
-      "issue": 1,
-      "pdf": "/assets/papers/sbr_6-1-_2022_08.pdf"
-    },
-    {
-      "title": "Social Business Review 제5권 제2호",
-      "date": "2022-02-25",
-      "id": "2022년 2월",
-      "authors": [
-        "전지윤",
-        "김현주",
-        "손현주",
-        "이미애",
-        "임정숙",
-        "주가연",
-        "정유리",
-        "안상준",
-        "류기현"
-      ],
-      "volume": 5,
-      "issue": 2,
-      "pdf": "/assets/papers/sbr_5-2-_2022_02.pdf"
-    },
-    {
-      "title": "Social Business Review 제5권 제1호",
-      "id": "2021년 8월",
-      "date": "2021-08-25",
-      "authors": [
-        "정찬회",
-        "노영한",
-        "변해진",
-        "권순찬",
-        "서진선"
-      ],
-      "volume": 5,
-      "issue": 1,
-      "pdf": "/assets/papers/sbr_5-1-_2021_08.pdf"
-    },
-    {
-      "id": "2021년 2월",
-      "date": "2021-02-25",
-      "title": "Social Business Review 제4권 제2호",
-      "authors": [
-        "이상윤",
-        "이선희",
-        "박성순",
-        "신효진",
-        "허광진"
-      ],
-      "volume": 4,
-      "issue": 2,
-      "pdf": "/assets/papers/sbr_4-2-_2021_02.pdf"
-    },
-    {
-      "id": "2020년 8월",
-      "date": "2020-08-25",
-      "title": "Social Business Review 제4권 제1호",
-      "authors": [
-        "강도현",
-        "이은정",
-        "최우진",
-        "박성순",
-        "김종필"
-      ],
-      "volume": 4,
-      "issue": 1,
-      "pdf": "/assets/papers/sbr_4-1-_2020_08.pdf"
-    },
-    {
-      "id": "2020년 2월",
-      "date": "2020-02-25",
-      "title": "Social Business Review 제3권 제2호",
-      "authors": [
-        "조수미",
-        "고경아",
-        "윤숙희",
-        "이상윤",
-        "박상선",
-        "서진선",
-        "김아영"
-      ],
-      "volume": 3,
-      "issue": 2,
-      "pdf": "/assets/papers/sbr_3-2-_2020_02.pdf"
-    },
-    {
-      "id": "2019년 8월",
-      "date": "2019-08-25",
-      "title": "Social Business Review 제3권 제1호",
-      "authors": [
-        "장지연",
-        "정선영",
-        "오희정",
-        "이승주"
-      ],
-      "volume": 3,
-      "issue": 1,
-      "pdf": "/assets/papers/sbr_3-1-_2019_08.pdf"
-    },
-    {
-      "id": "2018년 12월",
-      "date": "2018-12-25",
-      "title": "Social Business Review 제2권 제1호",
-      "authors": [
-        "이유빈",
-        "김활신",
-        "장지연",
-        "김아영",
-        "이상윤",
-        "최황현",
-        "윤찬민"
-      ],
-      "volume": 2,
-      "issue": 1,
-      "pdf": "/assets/papers/sbr_2-1-_2018_12.pdf"
-    },
-    {
       "id": "Social Business Review 제1권 제1호",
       "date": "2017-12-25",
       "title": "한국 노동자협동조합의 지배구조: 조합원 참여의 관점에서",
@@ -295,7 +88,17 @@
       "issue": 1,
       "pdf": "/assets/papers/조합원의-소비가-만들어가는-생협의-가치.pdf"
     },
-    {},
+    {
+      "id": "Social Business Review 제2권 제1호",
+      "title": "대안 모델로서 공동체 기반 협동조합의 가능성: 한국의료복지사회적협동조합 사례분석",
+      "date": "2018-12-25",
+      "authors": [
+        "이유빈"
+      ],
+      "volume": 2,
+      "issue": 1,
+      "pdf": "/assets/papers/대안-모델로서-공동체-기반-협동조합의-가능성_-한국의료복지사회적협동조합-사례분석.pdf"
+    },
     {},
     {},
     {},
