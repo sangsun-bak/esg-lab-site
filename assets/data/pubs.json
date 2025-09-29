@@ -362,17 +362,67 @@
       "pdf": "/assets/papers/조직-간-정보시스템을-통한-협동조합의-경쟁우위-창출.pdf"
     },
     {
-      "id": "Social Business Review 제5권 제1호"
+      "id": "Social Business Review 제5권 제2호",
+      "title": "기업은 시민이 될 수 있는가?: 기업 시민 이론과 조직이론 리뷰를 통한 분석",
+      "date": "2022-02-28",
+      "authors": [
+        "전지윤"
+      ],
+      "volume": 5,
+      "issue": 2,
+      "pdf": "/assets/papers/기업은-시민이-될-수-있는가_-기업-시민-이론과-조직이론-리뷰를-통한-분석.pdf"
     },
     {
-      "id": "Social Business Review 제5권 제1호"
+      "id": "Social Business Review 제5권 제2호",
+      "date": "2022-02-28",
+      "authors": [
+        "김현주",
+        "손현주",
+        "이미애",
+        "임정숙",
+        "주가연"
+      ],
+      "title": "동물병원 기업 다각화 전략 분석: 이리온동물병원과 우리동물병원생명사회적협동조합 사례",
+      "volume": 5,
+      "issue": 2,
+      "pdf": "/assets/papers/동물병원-기업-다각화-전략-분석_이리온동물병원과-우리동물병원생명사회적협동조합-사례.pdf"
     },
     {
-      "id": "Social Business Review 제5권 제1호"
+      "id": "Social Business Review 제5권 제2호",
+      "date": "2022-02-28",
+      "title": "경남산청의료복지사회적협동조합 창업그룹 특성 연구",
+      "authors": [
+        "정유리"
+      ],
+      "volume": 5,
+      "issue": 2,
+      "pdf": "/assets/papers/경남산청의료복지사회적협동조합-창업그룹-특성-연구.pdf"
     },
-    {},
-    {},
-    {},
+    {
+      "id": "Social Business Review 제5권 제2호",
+      "date": "2022-02-28",
+      "title": "공공기관과 사회적 경제조직 간의 파트너십 모델 사례로 본 사회적경제 활성화",
+      "authors": [
+        "안상준"
+      ],
+      "volume": 5,
+      "issue": 2,
+      "pdf": "/assets/papers/공공기관과-사회적-경제조직-간의-파트너십-모델-사례로-본-사회적경제-활성화.pdf"
+    },
+    {
+      "id": "Social Business Review 제5권 제2호",
+      "date": "2022-02-28",
+      "title": "학습, 학습조직, 조직학습 이론의 연결과 발전, 그리고 연구자의 궁금함",
+      "authors": [
+        "류기현"
+      ],
+      "volume": 5,
+      "issue": 2,
+      "pdf": "/assets/papers/학습-학습조직-조직학습-이론의-연결과-발전-그리고-연구자의-궁금함.pdf"
+    },
+    {
+      "id": "Social Business Review 제5권 제2호"
+    },
     {}
   ]
 }
