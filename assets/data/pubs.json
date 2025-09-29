@@ -250,9 +250,6 @@
       "pdf": "/assets/papers/코로나19-팬데믹-상황에서-소상공인의-사업-체험에-대한-현상학-연구.pdf"
     },
     {
-      "id": "Social Business Review 제4권 제1호"
-    },
-    {
       "id": "Social Business Review 제4권 제1호",
       "date": "2020-08-26",
       "title": "이사회 관계망과 협동조합 성과: 수원미래아이쿱생협 사례연구",
@@ -310,21 +307,69 @@
       "pdf": "/assets/papers/sna-social-network-analysis-방법론을-활용한-사회적기업가정신-연구-동향-분석.pdf"
     },
     {
-      "id": "Social Business Review 제4권 제2호"
+      "id": "Social Business Review 제5권 제1호",
+      "date": "2021-08-29",
+      "title": "자활 소셜 프랜차이즈 개발 방안",
+      "authors": [
+        "정찬회"
+      ],
+      "volume": 5,
+      "issue": 1,
+      "pdf": "/assets/papers/자활-소셜-프랜차이즈-개발-방안.pdf"
     },
     {
-      "id": "Social Business Review 제4권 제2호"
+      "id": "Social Business Review 제5권 제1호",
+      "date": "2021-08-29",
+      "title": "경영모델 조직진단 모형 분석으로 보는 사회적경제  중간지원기관 운영방안 모색",
+      "authors": [
+        "노영한"
+      ],
+      "volume": 5,
+      "issue": 1,
+      "pdf": "/assets/papers/경영모델-조직진단-모형-분석으로-보는-사회적경제-중간지원기관-운영방안-모색.pdf"
     },
     {
-      "id": "Social Business Review 제4권 제2호"
+      "id": "Social Business Review 제5권 제1호",
+      "date": "2021-08-29",
+      "title": "소비자생활협동조합 설립과 초기 안정화 요인 탐색: 아이쿱소비자생활협동조합의 지역조합 설립 사례 분석",
+      "authors": [
+        "변해진"
+      ],
+      "volume": 5,
+      "issue": 1,
+      "pdf": "/assets/papers/소비자생활협동조합-설립과-초기-안정화-요인-탐색-아이쿱소비자생활협동조합의-지역조합-설립-사례-분석.pdf"
     },
     {
-      "id": "Social Business Review 제4권 제2호"
+      "id": "Social Business Review 제5권 제1호",
+      "date": "2021-08-29",
+      "title": "생협 조합원의 이용동기 유형별 이용만족도: 아이쿱생협 조합원을 중심으로",
+      "authors": [
+        "권순찬"
+      ],
+      "volume": 5,
+      "issue": 1,
+      "pdf": "/assets/papers/생협-조합원의-이용동기-유형별-이용만족도.pdf"
     },
-    {},
-    {},
-    {},
-    {},
+    {
+      "id": "Social Business Review 제5권 제1호",
+      "date": "2021-08-29",
+      "title": "조직 간 정보시스템을 통한 협동조합의 경쟁우위 창출",
+      "authors": [
+        "서진선"
+      ],
+      "volume": 5,
+      "issue": 1,
+      "pdf": "/assets/papers/조직-간-정보시스템을-통한-협동조합의-경쟁우위-창출.pdf"
+    },
+    {
+      "id": "Social Business Review 제5권 제1호"
+    },
+    {
+      "id": "Social Business Review 제5권 제1호"
+    },
+    {
+      "id": "Social Business Review 제5권 제1호"
+    },
     {},
     {},
     {},
