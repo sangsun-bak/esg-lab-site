@@ -662,10 +662,29 @@
       "pdf": "/assets/papers/한국의-생협은-지금-어디에-서-있는가_조직군생태학의-관점으로-바라본-아이쿱생협의-진화과정.pdf"
     },
     {
-      "id": "Social Business Review 제8권 제2호"
+      "id": "Social Business Review 제8권 제2호",
+      "title": "지식경영에 활용되는 인공지능: 사회적경제조직에 주는  시사점",
+      "date": "2025-02-28",
+      "authors": [
+        "전혜원",
+        "변일영",
+        "김우태",
+        "장승권"
+      ],
+      "volume": 8,
+      "issue": 2,
+      "pdf": "/assets/papers/지식경영에-활용되는-인공지능_-사회적경제조직에-주는-시사점.pdf"
     },
     {
-      "id": "Social Business Review 제8권 제2호"
+      "id": "Social Business Review 제8권 제2호",
+      "date": "2025-02-28",
+      "title": "공정무역제품의 잠재소비자의 태도와 구매의도에 대한 탐색적 연구: 계획된 행동이론(TPB)에 근거하여",
+      "authors": [
+        "전혜원"
+      ],
+      "volume": 8,
+      "issue": 2,
+      "pdf": "/assets/papers/공정무역제품의-잠재소비자의-태도와-구매의도에-대한-탐색적-연구_계획된-행동이론-tpb-에-근거하여.pdf"
     }
   ]
 }
